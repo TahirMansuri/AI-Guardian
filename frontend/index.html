@@ -479,7 +479,7 @@
                 padding: 0 18px
             }
 
-            .status {
+            .status, .developer-top {
                 display: none
             }
 
@@ -489,6 +489,27 @@
 
             .grid {
                 grid-template-columns: 1fr
+            }
+        }
+
+        @media(max-width:768px) {
+            .footer {
+                flex-direction: column;
+                gap: 12px;
+                text-align: center;
+            }
+            .footer > div {
+                text-align: center !important;
+                justify-content: center !important;
+            }
+            .hero-label {
+                justify-content: center;
+            }
+            .hero {
+                text-align: center;
+            }
+            .hero p {
+                margin: 0 auto;
             }
         }
 
@@ -506,6 +527,16 @@
             .button {
                 width: 100%
             }
+            
+            .risk-head {
+                flex-direction: column;
+                gap: 15px;
+                text-align: center;
+            }
+            
+            .score {
+                text-align: center;
+            }
         }
     </style>
 </head>
@@ -519,7 +550,7 @@
             </div>
         </div>
         <div style="display: flex; align-items: center; gap: 20px;">
-            <div class="developer" style="margin-top: 0; font-size: 14px;">👨‍💻 Developed by - Asst. Prof. Tahir Mansuri</div>
+            <div class="developer developer-top" style="margin-top: 0; font-size: 14px; white-space: nowrap;">👨‍💻 Developed by - Asst. Prof. Tahir Mansuri</div>
             <div class="status"><span class="dot"></span><span id="statusText">LOCAL AI • ONLINE</span></div>
         </div>
     </header>
@@ -599,11 +630,15 @@
         </section>
 
         <footer class="footer">
-            <div>
+            <div style="flex: 1; text-align: left;">
                 <div>AI Guardian • Local AI Security Research Prototype</div>
             </div>
-            <div style="display:flex;align-items:center;gap:7px"><span class="dot"></span><span>Local AI
-                    Inference</span></div>
+            <div style="flex: 1; text-align: center; font-size: 11px; opacity: 0.9; font-weight: 600; color: var(--muted);">
+                Developed by - Asst. Prof. Tahir Mansuri
+            </div>
+            <div style="flex: 1; display:flex; justify-content: flex-end; align-items:center; gap:7px">
+                <span class="dot"></span><span>Local AI Inference</span>
+            </div>
         </footer>
     </main>
 
