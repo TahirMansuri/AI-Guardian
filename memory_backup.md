@@ -8,19 +8,24 @@
 - **Working Directory:** `/Users/tahirmansuri/Downloads/D Drive/My Project Work/AI-Guardian-fixed/`
 - **Completed Tasks:**
   - Initialized the `backend/security` module.
-  - Successfully implemented deterministic scam detection in `scam_rules.py` using regular expressions. It maps phrases to scores and categorizes them (e.g., OTP_REQUEST, DIGITAL_ARREST, KYC_REQUEST).
-  - The deterministic rules evaluate text and calculate a scam probability score capped at 100.
+  - Successfully implemented deterministic scam detection in `scam_rules.py` using regular expressions.
+  - Implemented URL analysis logic in `url_analyzer.py` (IP checks, missing HTTPS, URL shorteners, excessive subdomains, WHOIS domain age).
+  - Refactored `risk_engine.py` to aggregate indicators from the Rule Engine, AI, and URL Analyzer into a final capped risk score.
+  - **Architecture Refactoring:** Unified the frontend and backend. FastAPI now serves the `frontend/` directory statically on the root `/` endpoint, meaning we only need a single server (`uvicorn`) and a single Cloudflare Tunnel to expose the entire app online.
+  - **UI/UX Enhancements:** Updated `index.html` to include dynamic glowing CSS variables that adapt to the risk score color (Red/Orange/Yellow/Green), improved mobile responsiveness using media queries, and placed Developer Credits prominently in the header and footer.
 - **Pending Tasks:**
-  - Implementation of URL analysis logic inside `backend/security/url_analyzer.py`.
-  - Integration of the security module (`detect_scam_indicators` and future URL analyzer) into the main backend application (presumably in `backend/main.py`).
+  - Continuous refinement of UI and testing with more edge-case scam messages.
+  - Future AI optimization.
 
 ## File Structure (Security Module)
 ```
 backend/
+├── main.py (Serves static frontend + API routes)
+├── risk_engine.py
 └── security/
     ├── __init__.py (empty)
-    ├── scam_rules.py (contains `RULES` and `detect_scam_indicators` function)
-    └── url_analyzer.py (created, awaiting logic)
+    ├── scam_rules.py (contains `RULES` and `detect_scam_indicators`)
+    └── url_analyzer.py (contains URL intelligence and WHOIS logic)
 ```
 
-**Note to other AI Assistants:** Please use this context to seamlessly continue assisting with the `AI-Guardian` project, starting with completing `url_analyzer.py` or integrating `scam_rules.py` into the broader application architecture.
+**Note to other AI Assistants:** Please use this context to seamlessly continue assisting with the `AI-Guardian` project. The architecture now relies on a single unified backend process serving a relative-path frontend.
