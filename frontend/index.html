@@ -476,11 +476,22 @@
 
         @media(max-width:900px) {
             .topbar {
-                padding: 0 18px
+                padding: 12px 18px;
+                height: auto;
+                flex-wrap: wrap;
+                gap: 15px;
+                justify-content: center;
             }
 
-            .status, .developer-top {
-                display: none
+            .status {
+                display: none;
+            }
+
+            .developer-top {
+                font-size: 11px !important;
+                margin-top: 5px !important;
+                width: 100%;
+                text-align: center;
             }
 
             .main {
