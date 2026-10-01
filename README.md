@@ -113,4 +113,33 @@ Once all components are running, use the Browser GUI (`http://localhost:5500`) t
 2. **Job Scam:** *Congratulations! You have been selected for a work from home job. Pay ₹2,999 registration fee to activate your employment immediately.*
 3. **Digital Arrest:** *CBI NOTICE: Your Aadhaar has been linked to illegal transactions. Stay on a video call and transfer ₹50,000 immediately to avoid arrest.*
 
+---
+
+## 🌍 Hosting Online (Cloudflare Tunnels)
+
+To share your local AI Guardian instance with others globally, you can use Cloudflare Tunnels. Since the frontend and backend run on different ports, you need to expose both.
+
+### 1. Tunnel the Backend API
+Open a new terminal and run:
+```bash
+cloudflared tunnel --url http://127.0.0.1:8000
+```
+*Copy the generated URL (e.g., `https://random-words.trycloudflare.com`).*
+
+### 2. Update Frontend Configuration
+Open `frontend/index.html` and paste the backend tunnel URL into the configuration section (around line 629):
+```javascript
+const BACKEND_TUNNEL_URL = "https://random-words.trycloudflare.com";
+```
+Save the file.
+
+### 3. Tunnel the Frontend UI
+Open another terminal and run:
+```bash
+cloudflared tunnel --url http://127.0.0.1:5500
+```
+*Share the generated URL for the frontend. Anyone opening this link can use the system, while the AI processing continues to run locally and privately on your Mac.*
+
+---
+
 *(Developed for Aavishkar 2026 Student Competition)*
