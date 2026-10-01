@@ -148,10 +148,20 @@
 
         .panel {
             background: linear-gradient(145deg, rgba(14, 29, 49, .96), rgba(9, 22, 38, .96));
-            border: 1px solid var(--border);
+            border: 1px solid var(--risk-color, var(--border));
             border-radius: 16px;
             box-shadow: 0 20px 50px rgba(0, 0, 0, .35);
-            overflow: hidden
+            overflow: hidden;
+            transition: all 0.5s ease;
+        }
+
+        #resultPanel.has-risk {
+            animation: panelGlow 2s infinite alternate;
+        }
+
+        @keyframes panelGlow {
+            0% { box-shadow: 0 20px 50px rgba(0, 0, 0, .35), 0 0 5px var(--risk-color, transparent); }
+            100% { box-shadow: 0 20px 50px rgba(0, 0, 0, .45), 0 0 25px var(--risk-color, transparent); }
         }
 
         .panel-header {
@@ -339,11 +349,14 @@
             margin-top: 14px;
             padding: 6px 10px;
             border-radius: 6px;
-            border: 1px solid var(--border);
+            border: 1px solid var(--risk-color, var(--border));
             background: rgba(255, 255, 255, .025);
-            color: var(--muted);
+            color: var(--text);
+            text-shadow: 0 0 8px var(--risk-color, transparent);
+            animation: riskBoxGlow 1.5s infinite alternate;
             font-size: 11px;
-            font-weight: 600
+            font-weight: 600;
+            transition: all 0.5s ease;
         }
 
         .summary {
@@ -714,6 +727,11 @@
 
             // Apply the color variable to the box for glowing
             document.querySelector(".risk-head").style.setProperty("--risk-color", riskColor);
+            document.getElementById("category").style.setProperty("--risk-color", riskColor);
+            
+            const resultPanel = document.getElementById("resultPanel");
+            resultPanel.style.setProperty("--risk-color", riskColor);
+            resultPanel.classList.add("has-risk");
 
             if (risk === "HIGH" || risk === "CRITICAL") {
                 riskElement.classList.add("high-risk-spark");
