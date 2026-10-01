@@ -298,7 +298,7 @@ RULES = [
     },
 
     # --------------------------------------------------------
-    # 18. Suspicious Attachment
+    # 18. Suspicious Attachment / File
     # --------------------------------------------------------
     {
         "type": "SUSPICIOUS_ATTACHMENT",
@@ -308,9 +308,26 @@ RULES = [
             r"\bapk file\b",
             r"\binstall.*apk\b",
             r"\bdownload.*file\b",
+            # Double-extension trick (photo.jpg.apk, etc.)
+            r"\.jpg\.apk\b",
+            r"\.png\.apk\b",
+            r"\.jpeg\.apk\b",
+            r"\.pdf\.apk\b",
+            r"\.jpg\.exe\b",
+            r"\.png\.exe\b",
+            r"\.pdf\.exe\b",
+            r"\.doc\.exe\b",
+            r"photo.*\.apk\b",
+            r"image.*\.apk\b",
+            r"video.*\.apk\b",
+            # Install-from-link phrasing
+            r"install.*photo\b",
+            r"install.*image\b",
+            r"download.*image\b.*install\b",
+            r"download.*photo\b.*install\b",
         ],
         "score": 15,
-        "description": "The message asks the recipient to open, download, or install a file."
+        "description": "The message asks the recipient to open, download, or install a file, or references a file disguised with a double extension."
     },
 
     # --------------------------------------------------------
