@@ -21,9 +21,22 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+from fastapi.staticfiles import StaticFiles
+from fastapi.responses import FileResponse
+import os
+
+# Create frontend absolute path
+FRONTEND_DIR = os.path.join(os.path.dirname(__file__), "..", "frontend")
+
+# Serve the static files from frontend if needed (images, css, etc.)
+app.mount("/static", StaticFiles(directory=FRONTEND_DIR), name="static")
 
 @app.get("/")
-def home():
+def serve_frontend():
+    return FileResponse(os.path.join(FRONTEND_DIR, "index.html"))
+
+@app.get("/api/status")
+def status():
     return {
         "application": "AI Guardian",
         "status": "running",

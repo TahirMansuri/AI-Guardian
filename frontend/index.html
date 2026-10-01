@@ -643,39 +643,9 @@
     </main>
 
     <script>
-        /*
-         * ============================================================
-         * AI GUARDIAN API CONFIGURATION
-         *
-         * LOCAL:
-         *   http://127.0.0.1:8000
-         *
-         * CLOUDFLARE:
-         *   Replace the URL below with your BACKEND Cloudflare tunnel.
-         *
-         * Example:
-         *   https://abc123.trycloudflare.com
-         *
-         * IMPORTANT:
-         * The frontend tunnel and backend tunnel are different.
-         * The frontend cannot call localhost:8000 from a public browser.
-         * ============================================================
-         */
-        const BACKEND_TUNNEL_URL = "https://YOUR-BACKEND-TUNNEL.trycloudflare.com";
-
-        function getApiBaseUrl() {
-            const host = window.location.hostname;
-
-            // Local development
-            if (host === "localhost" || host === "127.0.0.1") {
-                return "http://127.0.0.1:8000";
-            }
-
-            // Public HTTPS / Cloudflare frontend
-            return BACKEND_TUNNEL_URL;
-        }
-
-        const API_BASE_URL = getApiBaseUrl();
+        // The frontend is now served directly by the backend API.
+        // We can use a relative URL to make requests seamlessly on localhost and over Cloudflare Tunnels!
+        const API_BASE_URL = "";
 
         function loadExample(number) {
             const examples = {
