@@ -6,6 +6,16 @@ A practical, research-oriented prototype for detecting digital scams, phishing, 
 
 ---
 
+<div align="center">
+  <h2>👨‍💻 Developed By</h2>
+  <h3><strong>Tahir Husen Najir Mansuri</strong></h3>
+  <p><i>Lead System Engineer, Optimas AI</i><br>
+  <i>HOD, Asst. Prof. at STES & Co Op Edu Society's IMRD, Shahada</i></p>
+  <a href="https://github.com/TahirMansuri"><img src="https://img.shields.io/badge/GitHub-Profile-181717?style=for-the-badge&logo=github&logoColor=white" alt="GitHub Profile" /></a>
+</div>
+
+---
+
 ## 🎯 Core Features
 
 - **Semantic AI Analysis:** Uses local LLMs (via `llama.cpp`) to semantically understand messages for scam and phishing intent.
