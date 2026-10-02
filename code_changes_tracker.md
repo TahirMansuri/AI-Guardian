@@ -37,3 +37,12 @@
 ### 8. `README.md`
 - **Action:** Documentation Update.
 - **Content:** Added detailed "Hosting Online (Cloudflare Tunnels)" instructions explaining the new 1-tunnel architecture. Highlighted the developer details with a GitHub Profile badge.
+
+
+### Date: 2026-10-02
+**Action:** Virtual environment setup & Dependencies installation
+**Changes made:**
+- Created Python virtual environment (`.venv`) at project root.
+- Upgraded pip.
+- Installed base requirements from `requirements.txt`.
+- Installed additional packages: `python-whois`, `pytesseract`, `pillow`, `pyzbar`, `opencv-python-headless`.

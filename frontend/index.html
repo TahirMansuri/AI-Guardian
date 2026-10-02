@@ -1,813 +1,382 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AI Guardian | Digital Threat Intelligence</title>
-    <style>
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0
-        }
-
-        :root {
-            --bg: #07111f;
-            --card: #0e1d31;
-            --border: #1d344e;
-            --text: #f4f7fb;
-            --muted: #8ea3b9;
-            --dim: #60758c;
-            --blue: #38bdf8;
-            --teal: #2dd4bf;
-            --red: #ef4444;
-            --orange: #f97316;
-            --yellow: #f59e0b;
-            --green: #22c55e
-        }
-
-        body {
-            min-height: 100vh;
-            background: radial-gradient(circle at 15% 10%, rgba(56, 189, 248, .08), transparent 30%), radial-gradient(circle at 85% 20%, rgba(45, 212, 191, .06), transparent 30%), var(--bg);
-            color: var(--text);
-            font-family: Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif
-        }
-
-        .topbar {
-            height: 72px;
-            border-bottom: 1px solid var(--border);
-            background: rgba(7, 17, 31, .88);
-            backdrop-filter: blur(14px);
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            padding: 0 40px;
-            position: sticky;
-            top: 0;
-            z-index: 10
-        }
-
-        .brand {
-            display: flex;
-            align-items: center;
-            gap: 14px
-        }
-
-        .brand-icon {
-            width: 42px;
-            height: 42px;
-            border-radius: 11px;
-            background: linear-gradient(135deg, #0ea5e9, #14b8a6);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 22px;
-            box-shadow: 0 0 25px rgba(45, 212, 191, .22)
-        }
-
-        .brand-text h1 {
-            font-size: 18px
-        }
-
-        .brand-text span {
-            display: block;
-            color: var(--dim);
-            font-size: 11px;
-            margin-top: 2px;
-            letter-spacing: .5px;
-            text-transform: uppercase
-        }
-
-        .status {
-            display: flex;
-            align-items: center;
-            gap: 9px;
-            padding: 8px 13px;
-            border: 1px solid rgba(34, 197, 94, .2);
-            border-radius: 8px;
-            background: rgba(34, 197, 94, .05);
-            color: #8ee6a8;
-            font-size: 12px;
-            font-weight: 600
-        }
-
-        .dot {
-            width: 7px;
-            height: 7px;
-            border-radius: 50%;
-            background: var(--green);
-            box-shadow: 0 0 10px rgba(34, 197, 94, .8)
-        }
-
-        .main {
-            max-width: 1380px;
-            margin: auto;
-            padding: 44px 40px 70px
-        }
-
-        .hero {
-            margin-bottom: 34px
-        }
-
-        .hero-label {
-            display: flex;
-            gap: 8px;
-            color: var(--teal);
-            font-size: 12px;
-            font-weight: 700;
-            letter-spacing: 1.2px;
-            text-transform: uppercase;
-            margin-bottom: 12px
-        }
-
-        .hero h2 {
-            font-size: clamp(30px, 4vw, 46px);
-            line-height: 1.08;
-            letter-spacing: -1.5px;
-            margin-bottom: 12px
-        }
-
-        .hero h2 span {
-            color: var(--blue)
-        }
-
-        .hero p {
-            max-width: 760px;
-            color: var(--muted);
-            font-size: 15px;
-            line-height: 1.7
-        }
-
-        .grid {
-            display: grid;
-            grid-template-columns: minmax(0, 1.05fr) minmax(0, .95fr);
-            gap: 22px;
-            align-items: start
-        }
-
-        .panel {
-            background: linear-gradient(145deg, rgba(14, 29, 49, .96), rgba(9, 22, 38, .96));
-            border: 1px solid var(--risk-color, var(--border));
-            border-radius: 16px;
-            box-shadow: 0 20px 50px rgba(0, 0, 0, .35);
-            overflow: hidden;
-            transition: all 0.5s ease;
-        }
-
-        #resultPanel.has-risk {
-            animation: panelGlow 2s infinite alternate;
-        }
-
-        @keyframes panelGlow {
-            0% { box-shadow: 0 20px 50px rgba(0, 0, 0, .35), 0 0 5px var(--risk-color, transparent); }
-            100% { box-shadow: 0 20px 50px rgba(0, 0, 0, .45), 0 0 25px var(--risk-color, transparent); }
-        }
-
-        .panel-header {
-            padding: 19px 22px;
-            border-bottom: 1px solid var(--border);
-            display: flex;
-            align-items: center;
-            justify-content: space-between
-        }
-
-        .panel-title {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            font-size: 14px;
-            font-weight: 700
-        }
-
-        .icon {
-            width: 30px;
-            height: 30px;
-            border-radius: 8px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            background: rgba(56, 189, 248, .1);
-            color: var(--blue)
-        }
-
-        .tag {
-            font-size: 10px;
-            color: var(--dim)
-        }
-
-        .body {
-            padding: 22px
-        }
-
-        textarea {
-            width: 100%;
-            min-height: 290px;
-            resize: vertical;
-            padding: 18px;
-            border: 1px solid #25405d;
-            border-radius: 11px;
-            background: #081522;
-            color: var(--text);
-            font: 14px inherit;
-            line-height: 1.7;
-            outline: none
-        }
-
-        textarea:focus {
-            border-color: rgba(56, 189, 248, .65);
-            box-shadow: 0 0 0 3px rgba(56, 189, 248, .08)
-        }
-
-        .footer-row {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            margin-top: 12px
-        }
-
-        .hint {
-            color: var(--dim);
-            font-size: 11px
-        }
-
-        .button {
-            border: 0;
-            border-radius: 9px;
-            padding: 12px 19px;
-            background: linear-gradient(135deg, #0ea5e9, #14b8a6);
-            color: #fff;
-            font-size: 13px;
-            font-weight: 700;
-            cursor: pointer
-        }
-
-        .button:disabled {
-            opacity: .6;
-            cursor: wait
-        }
-
-        .examples {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 8px;
-            margin-top: 18px
-        }
-
-        .example {
-            border: 1px solid var(--border);
-            background: rgba(255, 255, 255, .02);
-            color: var(--muted);
-            padding: 7px 10px;
-            border-radius: 7px;
-            font-size: 11px;
-            cursor: pointer
-        }
-
-        .empty {
-            min-height: 380px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            text-align: center;
-            color: var(--dim)
-        }
-
-        .empty-icon {
-            font-size: 28px;
-            margin-bottom: 18px
-        }
-
-        .result {
-            display: none
-        }
-
-        .risk-head {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            margin-bottom: 22px;
-            padding: 16px 20px;
-            border-radius: 12px;
-            background: rgba(0, 0, 0, 0.2);
-            border: 1px solid var(--risk-color, transparent);
-            animation: riskBoxGlow 1.5s infinite alternate;
-            transition: all 0.5s ease;
-        }
-
-        @keyframes riskBoxGlow {
-            0% { box-shadow: 0 0 5px var(--risk-color, transparent), inset 0 0 5px var(--risk-color, transparent); }
-            100% { box-shadow: 0 0 25px var(--risk-color, transparent), inset 0 0 12px var(--risk-color, transparent); }
-        }
-
-        .label {
-            font-size: 11px;
-            color: var(--dim);
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            margin-bottom: 7px
-        }
-
-        .risk {
-            font-size: 31px;
-            font-weight: 800
-        }
-
-        .score {
-            text-align: right
-        }
-
-        .score-num {
-            font-size: 27px;
-            font-weight: 800
-        }
-
-        .score-label {
-            color: var(--dim);
-            font-size: 10px;
-            text-transform: uppercase;
-            letter-spacing: 1px
-        }
-
-        .progress {
-            height: 7px;
-            background: #16283d;
-            border-radius: 10px;
-            overflow: hidden;
-            margin-top: 15px
-        }
-
-        .bar {
-            height: 100%;
-            width: 0;
-            border-radius: 10px;
-            transition: width .8s ease
-        }
-
-        .category {
-            display: inline-flex;
-            margin-top: 14px;
-            padding: 6px 10px;
-            border-radius: 6px;
-            border: 1px solid var(--risk-color, var(--border));
-            background: rgba(255, 255, 255, .025);
-            color: var(--text);
-            text-shadow: 0 0 8px var(--risk-color, transparent);
-            animation: riskBoxGlow 1.5s infinite alternate;
-            font-size: 11px;
-            font-weight: 600;
-            transition: all 0.5s ease;
-        }
-
-        .summary {
-            color: var(--muted);
-            font-size: 13px;
-            line-height: 1.7;
-            padding: 15px;
-            border-left: 2px solid var(--blue);
-            background: rgba(56, 189, 248, .035);
-            margin: 18px 0 24px
-        }
-
-        .heading {
-            font-size: 12px;
-            text-transform: uppercase;
-            letter-spacing: .9px;
-            color: var(--muted);
-            margin-bottom: 12px
-        }
-
-        .indicator {
-            padding: 13px 14px;
-            background: rgba(255, 255, 255, .025);
-            border: 1px solid rgba(255, 255, 255, .05);
-            border-radius: 9px;
-            margin-bottom: 8px
-        }
-
-        .itype {
-            color: #fca5a5;
-            font-size: 11px;
-            font-weight: 700;
-            text-transform: uppercase;
-            letter-spacing: .5px;
-            margin-bottom: 4px
-        }
-
-        .idesc {
-            color: var(--muted);
-            font-size: 12px;
-            line-height: 1.55
-        }
-
-        .actions {
-            margin-top: 22px;
-            padding-top: 20px;
-            border-top: 1px solid var(--border)
-        }
-
-        .action {
-            display: flex;
-            gap: 9px;
-            color: #b8e8c5;
-            font-size: 12px;
-            line-height: 1.5;
-            margin-bottom: 8px
-        }
-
-        .check {
-            color: var(--green);
-            font-weight: 700
-        }
-
-        .footer {
-            margin-top: 30px;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            padding: 15px 2px;
-            color: var(--dim);
-            font-size: 10px
-        }
-
-        .developer {
-            margin-top: 6px;
-            font-size: 13px;
-            font-weight: 700;
-            color: var(--blue);
-            text-shadow: 0 0 8px rgba(56, 189, 248, .6), 0 0 16px rgba(56, 189, 248, .4);
-            animation: nameGlow 2s ease-in-out infinite
-        }
-
-        @keyframes nameGlow {
-            0%, 100% { text-shadow: 0 0 8px rgba(56, 189, 248, .6), 0 0 16px rgba(56, 189, 248, .4); }
-            50% { text-shadow: 0 0 15px rgba(56, 189, 248, 1), 0 0 30px rgba(56, 189, 248, .8), 0 0 45px #fff; }
-        }
-
-        .loading {
-            display: inline-flex;
-            align-items: center;
-            gap: 8px
-        }
-
-        .spinner {
-            width: 13px;
-            height: 13px;
-            border: 2px solid rgba(255, 255, 255, .2);
-            border-top-color: #fff;
-            border-radius: 50%;
-            animation: spin .8s linear infinite
-        }
-
-        @keyframes spin {
-            to {
-                transform: rotate(360deg)
-            }
-        }
-
-        @keyframes sparkGlowText {
-            0%, 100% { text-shadow: 0 0 8px currentColor, 0 0 15px currentColor; }
-            50% { text-shadow: 0 0 25px currentColor, 0 0 40px currentColor, 0 0 50px #fff; }
-        }
-
-        .risk.high-risk-spark {
-            animation: sparkGlowText 0.5s ease-in-out infinite alternate;
-        }
-
-        @media(max-width:900px) {
-            .topbar {
-                padding: 12px 18px;
-                height: auto;
-                flex-wrap: wrap;
-                gap: 15px;
-                justify-content: center;
-            }
-
-            .status {
-                display: none;
-            }
-
-            .developer-top {
-                font-size: 11px !important;
-                margin-top: 5px !important;
-                width: 100%;
-                text-align: center;
-            }
-
-            .main {
-                padding: 30px 18px 50px
-            }
-
-            .grid {
-                grid-template-columns: 1fr
-            }
-        }
-
-        @media(max-width:768px) {
-            .footer {
-                flex-direction: column;
-                gap: 12px;
-                text-align: center;
-            }
-            .footer > div {
-                text-align: center !important;
-                justify-content: center !important;
-            }
-            .hero-label {
-                justify-content: center;
-            }
-            .hero {
-                text-align: center;
-            }
-            .hero p {
-                margin: 0 auto;
-            }
-        }
-
-        @media(max-width:500px) {
-            .hero h2 {
-                font-size: 30px
-            }
-
-            .footer-row {
-                align-items: stretch;
-                flex-direction: column;
-                gap: 12px
-            }
-
-            .button {
-                width: 100%
-            }
-            
-            .risk-head {
-                flex-direction: column;
-                gap: 15px;
-                text-align: center;
-            }
-            
-            .score {
-                text-align: center;
-            }
-        }
-    </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI Guardian | Digital Threat Intelligence</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{--bg:#07111f;--card:#0e1d31;--border:#1d344e;--text:#f4f7fb;--muted:#8ea3b9;--dim:#60758c;--blue:#38bdf8;--teal:#2dd4bf;--red:#ef4444;--orange:#f97316;--yellow:#f59e0b;--green:#22c55e}
+body{min-height:100vh;background:radial-gradient(circle at 15% 10%,rgba(56,189,248,.08),transparent 30%),radial-gradient(circle at 85% 20%,rgba(45,212,191,.06),transparent 30%),var(--bg);color:var(--text);font-family:Inter,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
+.topbar{height:72px;border-bottom:1px solid var(--border);background:rgba(7,17,31,.88);backdrop-filter:blur(14px);display:flex;align-items:center;justify-content:space-between;padding:0 40px;position:sticky;top:0;z-index:10}
+.brand{display:flex;align-items:center;gap:14px}
+.brand-icon{width:42px;height:42px;border-radius:11px;background:linear-gradient(135deg,#0ea5e9,#14b8a6);display:flex;align-items:center;justify-content:center;font-size:22px;box-shadow:0 0 25px rgba(45,212,191,.22)}
+.brand-text h1{font-size:18px}
+.brand-text span{display:block;color:var(--dim);font-size:11px;margin-top:2px;letter-spacing:.5px;text-transform:uppercase}
+.status{display:flex;align-items:center;gap:9px;padding:8px 13px;border:1px solid rgba(34,197,94,.2);border-radius:8px;background:rgba(34,197,94,.05);color:#8ee6a8;font-size:12px;font-weight:600}
+.dot{width:7px;height:7px;border-radius:50%;background:var(--green);box-shadow:0 0 10px rgba(34,197,94,.8)}
+.main{max-width:1380px;margin:auto;padding:44px 40px 70px}
+.hero{margin-bottom:34px}
+.hero-label{display:flex;gap:8px;color:var(--teal);font-size:12px;font-weight:700;letter-spacing:1.2px;text-transform:uppercase;margin-bottom:12px}
+.hero h2{font-size:clamp(30px,4vw,46px);line-height:1.08;letter-spacing:-1.5px;margin-bottom:12px}
+.hero h2 span{color:var(--blue)}
+.hero p{max-width:760px;color:var(--muted);font-size:15px;line-height:1.7}
+.tabs{display:flex;gap:8px;margin-bottom:16px}
+.tab{padding:9px 16px;border-radius:8px;border:1px solid var(--border);background:rgba(255,255,255,.02);color:var(--muted);font-size:12px;font-weight:600;cursor:pointer}
+.tab.active{background:linear-gradient(135deg,#0ea5e9,#14b8a6);color:#fff;border-color:transparent}
+.grid{display:grid;grid-template-columns:minmax(0,1.05fr) minmax(0,.95fr);gap:22px;align-items:start}
+.panel{background:linear-gradient(145deg,rgba(14,29,49,.96),rgba(9,22,38,.96));border:1px solid var(--risk-color,var(--border));border-radius:16px;box-shadow:0 20px 50px rgba(0,0,0,.35);overflow:hidden;transition:all .5s ease}
+#resultPanel.has-risk{animation:panelGlow 2s infinite alternate}
+@keyframes panelGlow{0%{box-shadow:0 20px 50px rgba(0,0,0,.35),0 0 5px var(--risk-color,transparent)}100%{box-shadow:0 20px 50px rgba(0,0,0,.45),0 0 25px var(--risk-color,transparent)}}
+.panel-header{padding:19px 22px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between}
+.panel-title{display:flex;align-items:center;gap:10px;font-size:14px;font-weight:700}
+.icon{width:30px;height:30px;border-radius:8px;display:flex;align-items:center;justify-content:center;background:rgba(56,189,248,.1);color:var(--blue)}
+.tag{font-size:10px;color:var(--dim)}
+.body{padding:22px}
+textarea{width:100%;min-height:250px;resize:vertical;padding:18px;border:1px solid #25405d;border-radius:11px;background:#081522;color:var(--text);font:14px inherit;line-height:1.7;outline:none}
+textarea:focus{border-color:rgba(56,189,248,.65);box-shadow:0 0 0 3px rgba(56,189,248,.08)}
+.dropzone{border:2px dashed #25405d;border-radius:11px;padding:40px 20px;text-align:center;background:#081522;cursor:pointer;transition:all .2s}
+.dropzone:hover,.dropzone.drag{border-color:rgba(56,189,248,.65);background:rgba(56,189,248,.04)}
+.dropzone-icon{font-size:32px;margin-bottom:10px;color:var(--blue)}
+.dropzone-text{color:var(--muted);font-size:13px;margin-bottom:6px}
+.dropzone-hint{color:var(--dim);font-size:11px}
+.preview{margin-top:14px;display:none}
+.preview img{max-width:100%;max-height:250px;border-radius:8px;border:1px solid var(--border)}
+.footer-row{display:flex;align-items:center;justify-content:space-between;margin-top:12px}
+.hint{color:var(--dim);font-size:11px}
+.button{border:0;border-radius:9px;padding:12px 19px;background:linear-gradient(135deg,#0ea5e9,#14b8a6);color:#fff;font-size:13px;font-weight:700;cursor:pointer}
+.button:disabled{opacity:.6;cursor:wait}
+.examples{display:flex;flex-wrap:wrap;gap:8px;margin-top:18px}
+.example{border:1px solid var(--border);background:rgba(255,255,255,.02);color:var(--muted);padding:7px 10px;border-radius:7px;font-size:11px;cursor:pointer}
+.empty{min-height:380px;display:flex;align-items:center;justify-content:center;text-align:center;color:var(--dim)}
+.empty-icon{font-size:28px;margin-bottom:18px}
+.result{display:none}
+.risk-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:22px;padding:16px 20px;border-radius:12px;background:rgba(0,0,0,.2);border:1px solid var(--risk-color,transparent);animation:riskBoxGlow 1.5s infinite alternate;transition:all .5s ease}
+@keyframes riskBoxGlow{0%{box-shadow:0 0 5px var(--risk-color,transparent),inset 0 0 5px var(--risk-color,transparent)}100%{box-shadow:0 0 25px var(--risk-color,transparent),inset 0 0 12px var(--risk-color,transparent)}}
+.label{font-size:11px;color:var(--dim);text-transform:uppercase;letter-spacing:1px;margin-bottom:7px}
+.risk{font-size:31px;font-weight:800}
+.score{text-align:right}
+.score-num{font-size:27px;font-weight:800}
+.score-label{color:var(--dim);font-size:10px;text-transform:uppercase;letter-spacing:1px}
+.progress{height:7px;background:#16283d;border-radius:10px;overflow:hidden;margin-top:15px}
+.bar{height:100%;width:0;border-radius:10px;transition:width .8s ease}
+.category{display:inline-flex;margin-top:14px;padding:6px 10px;border-radius:6px;border:1px solid var(--risk-color,var(--border));background:rgba(255,255,255,.025);color:var(--text);text-shadow:0 0 8px var(--risk-color,transparent);animation:riskBoxGlow 1.5s infinite alternate;font-size:11px;font-weight:600;transition:all .5s ease}
+.summary{color:var(--muted);font-size:13px;line-height:1.7;padding:15px;border-left:2px solid var(--blue);background:rgba(56,189,248,.035);margin:18px 0 24px}
+.heading{font-size:12px;text-transform:uppercase;letter-spacing:.9px;color:var(--muted);margin-bottom:12px}
+.indicator{padding:13px 14px;background:rgba(255,255,255,.025);border:1px solid rgba(255,255,255,.05);border-radius:9px;margin-bottom:8px}
+.itype{color:#fca5a5;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;margin-bottom:4px}
+.idesc{color:var(--muted);font-size:12px;line-height:1.55}
+.actions{margin-top:22px;padding-top:20px;border-top:1px solid var(--border)}
+.action{display:flex;gap:9px;color:#b8e8c5;font-size:12px;line-height:1.5;margin-bottom:8px}
+.check{color:var(--green);font-weight:700}
+.meta-section{margin-top:22px;padding-top:20px;border-top:1px solid var(--border)}
+.meta-box{background:rgba(56,189,248,.04);border:1px solid rgba(56,189,248,.15);border-radius:9px;padding:12px 14px;font-size:12px;color:var(--muted);line-height:1.6;white-space:pre-wrap;word-break:break-word;max-height:150px;overflow-y:auto}
+.qr-item{background:rgba(45,212,191,.05);border:1px solid rgba(45,212,191,.2);border-radius:8px;padding:10px 12px;font-size:12px;color:#a7f3d0;margin-bottom:8px;word-break:break-all;font-family:monospace}
+.footer{margin-top:30px;display:flex;align-items:center;justify-content:space-between;padding:15px 2px;color:var(--dim);font-size:10px}
+.developer{margin-top:6px;font-size:13px;font-weight:700;color:var(--blue);text-shadow:0 0 8px rgba(56,189,248,.6),0 0 16px rgba(56,189,248,.4);animation:nameGlow 2s ease-in-out infinite}
+@keyframes nameGlow{0%,100%{text-shadow:0 0 8px rgba(56,189,248,.6),0 0 16px rgba(56,189,248,.4)}50%{text-shadow:0 0 15px rgba(56,189,248,1),0 0 30px rgba(56,189,248,.8),0 0 45px #fff}}
+.loading{display:inline-flex;align-items:center;gap:8px}
+.spinner{width:13px;height:13px;border:2px solid rgba(255,255,255,.2);border-top-color:#fff;border-radius:50%;animation:spin .8s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+@keyframes sparkGlowText{0%,100%{text-shadow:0 0 8px currentColor,0 0 15px currentColor}50%{text-shadow:0 0 25px currentColor,0 0 40px currentColor,0 0 50px #fff}}
+.risk.high-risk-spark{animation:sparkGlowText .5s ease-in-out infinite alternate}
+@media(max-width:900px){.topbar{padding:12px 18px;height:auto;flex-wrap:wrap;gap:15px;justify-content:center}.status{display:none}.main{padding:30px 18px 50px}.grid{grid-template-columns:1fr}}
+@media(max-width:768px){.footer{flex-direction:column;gap:12px;text-align:center}.hero{text-align:center}}
+@media(max-width:500px){.hero h2{font-size:30px}.footer-row{align-items:stretch;flex-direction:column;gap:12px}.button{width:100%}.risk-head{flex-direction:column;gap:15px;text-align:center}.score{text-align:center}}
+</style>
 </head>
-
 <body>
-    <header class="topbar">
-        <div class="brand">
-            <div class="brand-icon">🛡️</div>
-            <div class="brand-text">
-                <h1>AI Guardian</h1><span>Digital Threat Intelligence</span>
-            </div>
-        </div>
-        <div style="display: flex; align-items: center; gap: 20px;">
-            <div class="developer developer-top" style="margin-top: 0; font-size: 14px; white-space: nowrap;">👨‍💻 Developed by - Asst. Prof. Tahir Mansuri</div>
-            <div class="status"><span class="dot"></span><span id="statusText">LOCAL AI • ONLINE</span></div>
-        </div>
-    </header>
+<header class="topbar">
+<div class="brand">
+<div class="brand-icon">🛡️</div>
+<div class="brand-text"><h1>AI Guardian</h1><span>Digital Threat Intelligence</span></div>
+</div>
+<div style="display:flex;align-items:center;gap:20px">
+<div style="font-size:14px;white-space:nowrap">👨‍💻 Developed by - Asst. Prof. Tahir Mansuri</div>
+<div class="status"><span class="dot"></span><span>LOCAL AI • ONLINE</span></div>
+</div>
+</header>
 
-    <main class="main">
-        <section class="hero">
-            <div class="hero-label"><span>●</span> AI-Powered Digital Safety</div>
-            <h2>Detect threats before <span>they become victims.</span></h2>
-            <p>Analyze suspicious messages and digital content using local AI. AI Guardian identifies potential scam
-                indicators, explains the risk and recommends safer actions — without sending your data to the cloud.</p>
-        </section>
+<main class="main">
+<section class="hero">
+<div class="hero-label"><span>●</span> AI-Powered Digital Safety</div>
+<h2>Detect threats before <span>they become victims.</span></h2>
+<p>Analyze suspicious messages and screenshots using local AI. AI Guardian identifies potential scam indicators, explains the risk and recommends safer actions — without sending your data to the cloud.</p>
+</section>
 
-        <section class="grid">
-            <div class="panel">
-                <div class="panel-header">
-                    <div class="panel-title">
-                        <div class="icon">◉</div>Threat Analysis
-                    </div><span class="tag">TEXT ANALYSIS</span>
-                </div>
-                <div class="body">
-                    <textarea id="message"
-                        placeholder="Paste a suspicious SMS, WhatsApp message, email or other digital communication here..."></textarea>
-                    <div class="footer-row">
-                        <div class="hint">Your message is analyzed locally.</div><button id="analyzeButton"
-                            class="button" onclick="analyzeMessage()">Analyze Threat</button>
-                    </div>
-                    <div class="examples">
-                        <button class="example" onclick="loadExample(1)">Banking / KYC</button>
-                        <button class="example" onclick="loadExample(2)">Job Scam</button>
-                        <button class="example" onclick="loadExample(3)">UPI Scam</button>
-                        <button class="example" onclick="loadExample(4)">Digital Arrest</button>
-                    </div>
-                </div>
-            </div>
+<section class="grid">
+<div class="panel">
+<div class="panel-header">
+<div class="panel-title"><div class="icon">◉</div>Threat Analysis</div>
+<span class="tag" id="inputTag">TEXT ANALYSIS</span>
+</div>
+<div class="body">
+<div class="tabs">
+<div class="tab active" data-mode="text" onclick="switchMode('text')">📝 Text</div>
+<div class="tab" data-mode="screenshot" onclick="switchMode('screenshot')">🖼️ Screenshot</div>
+</div>
 
-            <div id="resultPanel" class="panel">
-                <div class="panel-header">
-                    <div class="panel-title">
-                        <div class="icon">◈</div>Threat Assessment
-                    </div><span class="tag">AI ANALYSIS</span>
-                </div>
-                <div class="body">
-                    <div id="emptyState" class="empty">
-                        <div>
-                            <div class="empty-icon">◇</div>
-                            <div style="font-size:14px;color:#8ea3b9;margin-bottom:6px">No analysis available</div>
-                            <div style="font-size:11px">Submit a message to begin threat analysis.</div>
-                        </div>
-                    </div>
-                    <div id="result" class="result">
-                        <div class="risk-head">
-                            <div>
-                                <div class="label">Risk Level</div>
-                                <div id="risk" class="risk">—</div>
-                            </div>
-                            <div class="score">
-                                <div id="score" class="score-num">0</div>
-                                <div class="score-label">Risk Score / 100</div>
-                            </div>
-                        </div>
-                        <div class="progress">
-                            <div id="progressBar" class="bar"></div>
-                        </div>
-                        <div id="category" class="category">—</div>
-                        <div id="summary" class="summary">—</div>
-                        <div>
-                            <div class="heading">Detected Indicators</div>
-                            <div id="indicators"></div>
-                        </div>
-                        <div class="actions">
-                            <div class="heading">Recommended Actions</div>
-                            <div id="actions"></div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </section>
+<div id="textMode">
+<textarea id="message" placeholder="Paste a suspicious SMS, WhatsApp message, email or other digital communication here..."></textarea>
+<div class="footer-row">
+<div class="hint">Your message is analyzed locally.</div>
+<button id="analyzeButton" class="button" onclick="analyzeMessage()">Analyze Threat</button>
+</div>
+<div class="examples">
+<button class="example" onclick="loadExample(1)">Banking / KYC</button>
+<button class="example" onclick="loadExample(2)">Job Scam</button>
+<button class="example" onclick="loadExample(3)">UPI Scam</button>
+<button class="example" onclick="loadExample(4)">Digital Arrest</button>
+</div>
+</div>
 
-        <footer class="footer">
-            <div style="flex: 1; text-align: left;">
-                <div>AI Guardian • Local AI Security Research Prototype</div>
-            </div>
-            <div style="flex: 1; text-align: center; font-size: 11px; opacity: 0.9; font-weight: 600; color: var(--muted);">
-                Developed by - Asst. Prof. Tahir Mansuri
-            </div>
-            <div style="flex: 1; display:flex; justify-content: flex-end; align-items:center; gap:7px">
-                <span class="dot"></span><span>Local AI Inference</span>
-            </div>
-        </footer>
-    </main>
+<div id="screenshotMode" style="display:none">
+<div class="dropzone" id="dropzone" onclick="document.getElementById('fileInput').click()">
+<div class="dropzone-icon">🖼️</div>
+<div class="dropzone-text">Click to upload or drag & drop a screenshot</div>
+<div class="dropzone-hint">PNG, JPG, JPEG • Max 10 MB</div>
+</div>
+<input type="file" id="fileInput" accept="image/*" style="display:none" onchange="handleFileSelect(event)">
+<div class="preview" id="preview"><img id="previewImg" alt="Preview"></div>
+<div class="footer-row">
+<div class="hint">OCR + QR analysis runs locally.</div>
+<button id="analyzeScreenshotButton" class="button" onclick="analyzeScreenshot()" disabled>Analyze Screenshot</button>
+</div>
+</div>
+</div>
+</div>
 
-    <script>
-        // The frontend is now served directly by the backend API.
-        // We can use a relative URL to make requests seamlessly on localhost and over Cloudflare Tunnels!
-        const API_BASE_URL = "";
+<div id="resultPanel" class="panel">
+<div class="panel-header">
+<div class="panel-title"><div class="icon">◈</div>Threat Assessment</div>
+<span class="tag">AI ANALYSIS</span>
+</div>
+<div class="body">
+<div id="emptyState" class="empty">
+<div>
+<div class="empty-icon">◇</div>
+<div style="font-size:14px;color:#8ea3b9;margin-bottom:6px">No analysis available</div>
+<div style="font-size:11px">Submit a message or screenshot to begin threat analysis.</div>
+</div>
+</div>
+<div id="result" class="result">
+<div class="risk-head">
+<div><div class="label">Risk Level</div><div id="risk" class="risk">—</div></div>
+<div class="score"><div id="score" class="score-num">0</div><div class="score-label">Risk Score / 100</div></div>
+</div>
+<div class="progress"><div id="progressBar" class="bar"></div></div>
+<div id="category" class="category">—</div>
+<div id="summary" class="summary">—</div>
+<div id="screenshotMeta"></div>
+<div><div class="heading">Detected Indicators</div><div id="indicators"></div></div>
+<div class="actions"><div class="heading">Recommended Actions</div><div id="actions"></div></div>
+</div>
+</div>
+</div>
+</section>
 
-        function loadExample(number) {
-            const examples = {
-                1: "URGENT: Your SBI account will be blocked today. Click https://example.com immediately to complete KYC.",
-                2: "Congratulations! You have been selected for a work from home job. Pay ₹2,999 registration fee to activate your employment immediately.",
-                3: "Your UPI refund is pending. Scan this QR code and enter your UPI PIN to receive your refund immediately.",
-                4: "CBI NOTICE: Your Aadhaar has been linked to illegal transactions. Stay on a video call and transfer ₹50,000 immediately to avoid arrest."
-            };
-            document.getElementById("message").value = examples[number];
-        }
+<footer class="footer">
+<div style="flex:1;text-align:left"><div>AI Guardian • Local AI Security Research Prototype</div></div>
+<div style="flex:1;text-align:center;font-size:11px;opacity:.9;font-weight:600;color:var(--muted)">Developed by - Asst. Prof. Tahir Mansuri</div>
+<div style="flex:1;display:flex;justify-content:flex-end;align-items:center;gap:7px"><span class="dot"></span><span>Local AI Inference</span></div>
+</footer>
+</main>
 
-        async function analyzeMessage() {
-            const message = document.getElementById("message").value.trim();
+<script>
+const API_BASE_URL = "";
+let currentMode = "text";
+let selectedFile = null;
 
-            if (!message) {
-                alert("Please enter a message for analysis.");
-                return;
-            }
+function switchMode(mode){
+  currentMode = mode;
+  document.querySelectorAll(".tab").forEach(t=>t.classList.remove("active"));
+  document.querySelector(`.tab[data-mode="${mode}"]`).classList.add("active");
+  document.getElementById("textMode").style.display = mode === "text" ? "block" : "none";
+  document.getElementById("screenshotMode").style.display = mode === "screenshot" ? "block" : "none";
+  document.getElementById("inputTag").innerText = mode === "text" ? "TEXT ANALYSIS" : "SCREENSHOT ANALYSIS";
+}
 
-            const button = document.getElementById("analyzeButton");
-            button.disabled = true;
-            button.innerHTML = '<span class="loading"><span class="spinner"></span>Analyzing...</span>';
+function loadExample(n){
+  const ex = {
+    1:"URGENT: Your SBI account will be blocked today. Click https://example.com immediately to complete KYC.",
+    2:"Congratulations! You have been selected for a work from home job. Pay ₹2,999 registration fee to activate your employment immediately.",
+    3:"Your UPI refund is pending. Scan this QR code and enter your UPI PIN to receive your refund immediately.",
+    4:"CBI NOTICE: Your Aadhaar has been linked to illegal transactions. Stay on a video call and transfer ₹50,000 immediately to avoid arrest."
+  };
+  document.getElementById("message").value = ex[n];
+}
 
-            document.getElementById("emptyState").style.display = "none";
-            document.getElementById("result").style.display = "block";
-            document.getElementById("risk").innerText = "Analyzing";
-            document.getElementById("summary").innerText = "AI Guardian is analyzing the message...";
+const dropzone = document.getElementById("dropzone");
+["dragenter","dragover"].forEach(e=>dropzone.addEventListener(e,ev=>{ev.preventDefault();dropzone.classList.add("drag")}));
+["dragleave","drop"].forEach(e=>dropzone.addEventListener(e,ev=>{ev.preventDefault();dropzone.classList.remove("drag")}));
+dropzone.addEventListener("drop",ev=>{
+  const files = ev.dataTransfer.files;
+  if(files.length) handleFile(files[0]);
+});
 
-            try {
-                const response = await fetch(`${API_BASE_URL}/analyze`, {
-                    method: "POST",
-                    headers: {
-                        "Content-Type": "application/json"
-                    },
-                    body: JSON.stringify({ message: message })
-                });
+function handleFileSelect(ev){
+  const files = ev.target.files;
+  if(files.length) handleFile(files[0]);
+}
 
-                const responseText = await response.text();
+function handleFile(file){
+  if(!file.type.startsWith("image/")){alert("Please select an image file.");return}
+  if(file.size > 10*1024*1024){alert("File too large. Max 10 MB.");return}
+  selectedFile = file;
+  const reader = new FileReader();
+  reader.onload = e=>{
+    document.getElementById("previewImg").src = e.target.result;
+    document.getElementById("preview").style.display = "block";
+    document.getElementById("analyzeScreenshotButton").disabled = false;
+  };
+  reader.readAsDataURL(file);
+}
 
-                if (!response.ok) {
-                    throw new Error(`API ${response.status}: ${responseText}`);
-                }
+async function analyzeMessage(){
+  const message = document.getElementById("message").value.trim();
+  if(!message){alert("Please enter a message for analysis.");return}
+  const btn = document.getElementById("analyzeButton");
+  btn.disabled = true;
+  btn.innerHTML = '<span class="loading"><span class="spinner"></span>Analyzing...</span>';
+  showLoading();
+  try{
+    const res = await fetch(`${API_BASE_URL}/analyze`,{
+      method:"POST",
+      headers:{"Content-Type":"application/json"},
+      body:JSON.stringify({message})
+    });
+    const txt = await res.text();
+    if(!res.ok) throw new Error(`API ${res.status}: ${txt}`);
+    renderResult(JSON.parse(txt));
+  }catch(err){
+    showError(err.message);
+  }finally{
+    btn.disabled = false;
+    btn.innerText = "Analyze Threat";
+  }
+}
 
-                let data;
-                try {
-                    data = JSON.parse(responseText);
-                } catch (e) {
-                    throw new Error("Backend returned invalid JSON: " + responseText);
-                }
+async function analyzeScreenshot(){
+  if(!selectedFile){alert("Please select a screenshot first.");return}
+  const btn = document.getElementById("analyzeScreenshotButton");
+  btn.disabled = true;
+  btn.innerHTML = '<span class="loading"><span class="spinner"></span>Analyzing...</span>';
+  showLoading();
+  try{
+    const fd = new FormData();
+    fd.append("file", selectedFile);
+    const res = await fetch(`${API_BASE_URL}/analyze-screenshot`,{method:"POST",body:fd});
+    const txt = await res.text();
+    if(!res.ok) throw new Error(`API ${res.status}: ${txt}`);
+    renderResult(JSON.parse(txt));
+  }catch(err){
+    showError(err.message);
+  }finally{
+    btn.disabled = false;
+    btn.innerText = "Analyze Screenshot";
+  }
+}
 
-                renderResult(data);
+function showLoading(){
+  document.getElementById("emptyState").style.display = "none";
+  document.getElementById("result").style.display = "block";
+  document.getElementById("risk").innerText = "Analyzing";
+  document.getElementById("summary").innerText = "AI Guardian is analyzing...";
+  document.getElementById("screenshotMeta").innerHTML = "";
+}
 
-            } catch (error) {
-                console.error("AI Guardian API Error:", error);
+function showError(msg){
+  document.getElementById("risk").innerText = "Analysis Failed";
+  document.getElementById("score").innerText = "0";
+  document.getElementById("category").innerText = "Connection Error";
+  document.getElementById("summary").innerText = `Unable to connect to backend. ${msg}`;
+  document.getElementById("indicators").innerHTML = "";
+  document.getElementById("actions").innerHTML = "";
+  document.getElementById("screenshotMeta").innerHTML = "";
+}
 
-                document.getElementById("risk").innerText = "Analysis Failed";
-                document.getElementById("score").innerText = "0";
-                document.getElementById("category").innerText = "Connection Error";
-                document.getElementById("summary").innerText =
-                    `Unable to connect to the AI Guardian backend. ${error.message}`;
+function renderResult(data){
+  const risk = (data.risk_level || "UNKNOWN").toUpperCase();
+  const score = Number(data.risk_score || 0);
+  document.getElementById("risk").innerText = risk;
+  document.getElementById("score").innerText = score;
+  document.getElementById("category").innerText = formatCategory(data.category);
+  document.getElementById("summary").innerText = data.summary || "";
+  const progress = document.getElementById("progressBar");
+  progress.style.width = Math.min(score,100) + "%";
+  const riskColor = getRiskColor(risk);
+  const riskEl = document.getElementById("risk");
+  riskEl.style.color = riskColor;
+  progress.style.background = riskColor;
+  document.querySelector(".risk-head").style.setProperty("--risk-color", riskColor);
+  document.getElementById("category").style.setProperty("--risk-color", riskColor);
+  const rp = document.getElementById("resultPanel");
+  rp.style.setProperty("--risk-color", riskColor);
+  rp.classList.add("has-risk");
+  if(risk === "HIGH" || risk === "CRITICAL") riskEl.classList.add("high-risk-spark");
+  else riskEl.classList.remove("high-risk-spark");
 
-                document.getElementById("indicators").innerHTML = "";
-                document.getElementById("actions").innerHTML = "";
-            } finally {
-                button.disabled = false;
-                button.innerText = "Analyze Threat";
-            }
-        }
+  const indicators = document.getElementById("indicators");
+  indicators.innerHTML = "";
+  (data.indicators || []).forEach(item=>{
+    const div = document.createElement("div");
+    div.className = "indicator";
+    const src = item.source ? ` <span style="color:#60758c;font-size:10px">[${escapeHtml(item.source)}]</span>` : "";
+    div.innerHTML = `<div class="itype">${escapeHtml(item.type || "Indicator")}${src}</div><div class="idesc">${escapeHtml(item.description || "")}</div>`;
+    indicators.appendChild(div);
+  });
 
-        function renderResult(data) {
-            const risk = (data.risk_level || "UNKNOWN").toUpperCase();
-            const score = Number(data.risk_score || 0);
+  const actions = document.getElementById("actions");
+  actions.innerHTML = "";
+  (data.recommended_actions || []).forEach(action=>{
+    const div = document.createElement("div");
+    div.className = "action";
+    div.innerHTML = `<span class="check">✓</span><span>${escapeHtml(action)}</span>`;
+    actions.appendChild(div);
+  });
 
-            document.getElementById("risk").innerText = risk;
-            document.getElementById("score").innerText = score;
-            document.getElementById("category").innerText = formatCategory(data.category);
-            document.getElementById("summary").innerText = data.summary || "";
+  renderScreenshotMeta(data.screenshot_analysis);
+}
 
-            const progress = document.getElementById("progressBar");
-            progress.style.width = Math.min(score, 100) + "%";
+function renderScreenshotMeta(meta){
+  const container = document.getElementById("screenshotMeta");
+  if(!meta){container.innerHTML="";return}
 
-            const riskColor = getRiskColor(risk);
-            const riskElement = document.getElementById("risk");
-            riskElement.style.color = riskColor;
-            progress.style.background = riskColor;
+  let html = '<div class="meta-section"><div class="heading">Screenshot Analysis</div>';
 
-            // Apply the color variable to the box for glowing
-            document.querySelector(".risk-head").style.setProperty("--risk-color", riskColor);
-            document.getElementById("category").style.setProperty("--risk-color", riskColor);
-            
-            const resultPanel = document.getElementById("resultPanel");
-            resultPanel.style.setProperty("--risk-color", riskColor);
-            resultPanel.classList.add("has-risk");
+  if(meta.extracted_text){
+    html += `<div style="font-size:11px;color:#60758c;margin-bottom:6px">Extracted Text (OCR):</div><div class="meta-box">${escapeHtml(meta.extracted_text)}</div>`;
+  } else {
+    html += `<div style="font-size:11px;color:#60758c">No text detected via OCR.</div>`;
+  }
 
-            if (risk === "HIGH" || risk === "CRITICAL") {
-                riskElement.classList.add("high-risk-spark");
-            } else {
-                riskElement.classList.remove("high-risk-spark");
-            }
+  if(meta.qr_codes && meta.qr_codes.length){
+    html += `<div style="font-size:11px;color:#60758c;margin-top:12px;margin-bottom:6px">QR Codes Detected:</div>`;
+    meta.qr_codes.forEach(qr=>{
+      html += `<div class="qr-item">📱 ${escapeHtml(qr)}</div>`;
+    });
+  }
 
-            const indicators = document.getElementById("indicators");
-            indicators.innerHTML = "";
+  html += '</div>';
+  container.innerHTML = html;
+}
 
-            (data.indicators || []).forEach(item => {
-                const div = document.createElement("div");
-                div.className = "indicator";
-                div.innerHTML = `
-            <div class="itype">${escapeHtml(item.type || "Indicator")}</div>
-            <div class="idesc">${escapeHtml(item.description || "")}</div>
-        `;
-                indicators.appendChild(div);
-            });
+function getRiskColor(risk){
+  if(risk === "CRITICAL") return "#ef4444";
+  if(risk === "HIGH") return "#f97316";
+  if(risk === "MEDIUM") return "#f59e0b";
+  if(risk === "LOW") return "#22c55e";
+  return "#38bdf8";
+}
 
-            const actions = document.getElementById("actions");
-            actions.innerHTML = "";
+function formatCategory(c){
+  if(!c) return "Unclassified";
+  return String(c).replaceAll("_"," ").replace(/\w/g,x=>x.toUpperCase());
+}
 
-            (data.recommended_actions || []).forEach(action => {
-                const div = document.createElement("div");
-                div.className = "action";
-                div.innerHTML = `
-            <span class="check">✓</span>
-            <span>${escapeHtml(action)}</span>
-        `;
-                actions.appendChild(div);
-            });
-        }
-
-        function getRiskColor(risk) {
-            if (risk === "CRITICAL") return "#ef4444";
-            if (risk === "HIGH") return "#f97316";
-            if (risk === "MEDIUM") return "#f59e0b";
-            if (risk === "LOW") return "#22c55e";
-            return "#38bdf8";
-        }
-
-        function formatCategory(category) {
-            if (!category) return "Unclassified";
-            return String(category)
-                .replaceAll("_", " ")
-                .replace(/\b\w/g, c => c.toUpperCase());
-        }
-
-        function escapeHtml(value) {
-            return String(value)
-                .replaceAll("&", "&amp;")
-                .replaceAll("<", "&lt;")
-                .replaceAll(">", "&gt;")
-                .replaceAll('"', "&quot;")
-                .replaceAll("'", "&#039;");
-        }
-    </script>
+function escapeHtml(v){
+  return String(v).replaceAll("&","&amp;").replaceAll("<","&lt;").replaceAll(">","&gt;").replaceAll('"',"&quot;").replaceAll("'","&#039;");
+}
+</script>
 </body>
-
 </html>
