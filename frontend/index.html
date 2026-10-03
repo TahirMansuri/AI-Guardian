@@ -111,6 +111,19 @@ textarea:focus{border-color:rgba(56,189,248,.65);box-shadow:0 0 0 3px rgba(56,18
 <span class="tag" id="inputTag">TEXT ANALYSIS</span>
 </div>
 <div class="body">
+<div style="margin-bottom:14px">
+  <label style="font-size:11px;color:#60758c;text-transform:uppercase;letter-spacing:1px;display:block;margin-bottom:6px">
+    Analysis Engine
+  </label>
+  <select id="providerSelect" style="width:100%;padding:10px 12px;border-radius:8px;background:#081522;color:#f4f7fb;border:1px solid #25405d;font-size:13px;outline:none">
+    <option value="local">🖥️ Local Qwen2.5-7B (Offline · Private)</option>
+    <option value="openai" disabled>☁️ OpenAI GPT-4o-mini (Cloud · Requires API Key)</option>
+    <option value="gemini" disabled>☁️ Google Gemini 1.5 Flash (Cloud · Requires API Key)</option>
+  </select>
+  <div id="providerHint" style="font-size:10px;color:#60758c;margin-top:6px">
+    All analysis runs locally. Your data never leaves this device.
+  </div>
+</div>
 <div class="tabs">
 <div class="tab active" data-mode="text" onclick="switchMode('text')">📝 Text</div>
 <div class="tab" data-mode="screenshot" onclick="switchMode('screenshot')">🖼️ Screenshot</div>
@@ -243,7 +256,7 @@ async function analyzeMessage(){
     const res = await fetch(`${API_BASE_URL}/analyze`,{
       method:"POST",
       headers:{"Content-Type":"application/json"},
-      body:JSON.stringify({message})
+      body:JSON.stringify({message: message, provider: document.getElementById("providerSelect").value})
     });
     const txt = await res.text();
     if(!res.ok) throw new Error(`API ${res.status}: ${txt}`);
@@ -265,6 +278,7 @@ async function analyzeScreenshot(){
   try{
     const fd = new FormData();
     fd.append("file", selectedFile);
+    fd.append("provider", document.getElementById("providerSelect").value);
     const res = await fetch(`${API_BASE_URL}/analyze-screenshot`,{method:"POST",body:fd});
     const txt = await res.text();
     if(!res.ok) throw new Error(`API ${res.status}: ${txt}`);
@@ -302,6 +316,18 @@ function renderResult(data){
   document.getElementById("score").innerText = score;
   document.getElementById("category").innerText = formatCategory(data.category);
   document.getElementById("summary").innerText = data.summary || "";
+  
+  // Remove any previously added provider info
+  const oldProviderP = document.getElementById("providerUsedInfo");
+  if(oldProviderP) oldProviderP.remove();
+
+  if (data.provider_used) {
+    const p = document.createElement("div");
+    p.id = "providerUsedInfo";
+    p.style.cssText = "font-size:10px;color:#60758c;margin-top:-14px;margin-bottom:14px;letter-spacing:.5px";
+    p.innerText = `Analyzed via: ${data.provider_used.toUpperCase()}`;
+    document.getElementById("summary").after(p);
+  }
   const progress = document.getElementById("progressBar");
   progress.style.width = Math.min(score,100) + "%";
   const riskColor = getRiskColor(risk);
@@ -377,6 +403,40 @@ function formatCategory(c){
 function escapeHtml(v){
   return String(v).replaceAll("&","&amp;").replaceAll("<","&lt;").replaceAll(">","&gt;").replaceAll('"',"&quot;").replaceAll("'","&#039;");
 }
+async function loadProviders() {
+  try {
+    const res = await fetch("/api/providers");
+    const data = await res.json();
+    const select = document.getElementById("providerSelect");
+    const hint = document.getElementById("providerHint");
+
+    data.providers.forEach(p => {
+      const option = select.querySelector(`option[value="${p.id}"]`);
+      if (!option) return;
+
+      if (p.available) {
+        option.disabled = false;
+      } else {
+        option.disabled = true;
+      }
+    });
+
+    select.addEventListener("change", () => {
+      const mode = select.value;
+      if (mode === "local") {
+        hint.innerText = "All analysis runs locally. Your data never leaves this device.";
+        hint.style.color = "#60758c";
+      } else {
+        hint.innerText = `⚠ Cloud mode: message text will be sent to ${mode.toUpperCase()}'s API.`;
+        hint.style.color = "#f59e0b";
+      }
+    });
+  } catch (e) {
+    console.error("Failed to load providers:", e);
+  }
+}
+
+loadProviders();
 </script>
 </body>
 </html>

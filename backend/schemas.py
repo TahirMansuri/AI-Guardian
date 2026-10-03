@@ -1,14 +1,16 @@
 from pydantic import BaseModel
-from typing import List
+from typing import List, Optional
 
 
 class ScamRequest(BaseModel):
     message: str
+    provider: Optional[str] = "local"
 
 
 class Indicator(BaseModel):
     type: str
     description: str
+    source: Optional[str] = None
 
 
 class ScamAnalysis(BaseModel):
