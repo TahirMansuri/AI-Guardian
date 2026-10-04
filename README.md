@@ -89,7 +89,9 @@ graph TD
 
 ## 🚀 Setup & Running Instructions
 
-To run AI Guardian locally, you need to start two independent components: the LLM engine and the unified backend/frontend server.
+> **Using Windows?** Please see our dedicated [**Windows Setup Guide**](./WINDOWS_SETUP.md) for detailed step-by-step instructions.
+
+To run AI Guardian locally on macOS/Linux, you need to start two independent components: the LLM engine and the unified backend/frontend server.
 
 ### 1. Prerequisites (For Screenshot Analysis)
 You need system-level libraries for OCR and QR decoding:
