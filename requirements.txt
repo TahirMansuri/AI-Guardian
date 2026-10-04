@@ -4,3 +4,11 @@ requests
 pydantic
 python-multipart
 python-whois
+pytesseract
+pillow
+pyzbar
+opencv-python-headless
+openai
+google-generativeai
+python-dotenv
+androguard
