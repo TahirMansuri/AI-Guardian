@@ -34,6 +34,43 @@ A practical, research-oriented prototype for detecting digital scams, phishing, 
 
 ---
 
+## 📸 Application Gallery
+
+<div align="center">
+
+### 1. Unified Analysis Dashboard
+The main interface supporting seamless switching between text, screenshot, and APK analysis modes.
+<br>
+<img src="./screenshots/01-landing-page.png" alt="Landing Page" width="800"/>
+<br><br>
+
+### 2. Deep Text Analysis
+Real-time evaluation of scam messages leveraging LLM semantics, URL intelligence, and deterministic rules.
+<br>
+<img src="./screenshots/02-text-analysis.png" alt="Text Analysis" width="800"/>
+<br><br>
+
+### 3. Automated Screenshot OCR
+Extracts text and URLs from images (like fake banking apps or WhatsApp messages) for instant threat assessment.
+<br>
+<img src="./screenshots/03-screenshot-analysis.png" alt="Screenshot Analysis" width="800"/>
+<br><br>
+
+### 4. Static APK Metadata Inspection
+Statically analyzes Android `.apk` files to identify banking trojans, spyware permissions, and package spoofing.
+<br>
+<img src="./screenshots/04-apk-analysis.png" alt="APK Analysis" width="800"/>
+<br><br>
+
+### 5. Multi-Provider LLM Selection
+Supports dynamic routing between local privacy-first models (llama.cpp) and cloud APIs (Gemini/OpenAI).
+<br>
+<img src="./screenshots/05-provider-selection.png" alt="Provider Selection" width="800"/>
+
+</div>
+
+---
+
 ## 🏗️ Architecture
 
 ```mermaid
