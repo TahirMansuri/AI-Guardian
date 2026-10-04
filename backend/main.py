@@ -9,7 +9,7 @@ load_dotenv()
 
 from schemas import ScamRequest
 from llm_providers import get_provider, list_providers
-from risk_engine import calculate_final_risk, determine_risk_level
+from risk_engine import calculate_final_risk, determine_risk_level, localize_actions
 from security.screenshot_analyzer import analyze_screenshot
 from security.apk_analyzer import analyze_apk
 
@@ -79,7 +79,7 @@ def analyze(request: ScamRequest):
         ai_result = local.analyze(request.message)
         actual_provider = "local"
 
-    final_result = calculate_final_risk(request.message, ai_result)
+    final_result = calculate_final_risk(request.message, ai_result, request.lang)
     final_result["provider_used"] = actual_provider
     final_result["provider_requested"] = provider_name
     return final_result
@@ -92,7 +92,8 @@ def analyze(request: ScamRequest):
 @app.post("/analyze-screenshot")
 async def analyze_screenshot_endpoint(
     file: UploadFile = File(...),
-    provider: str = "local"
+    provider: str = "local",
+    lang: str = "en"
 ):
     if not file.content_type or not file.content_type.startswith("image/"):
         raise HTTPException(status_code=400, detail="Only image files are supported.")
@@ -114,9 +115,9 @@ async def analyze_screenshot_endpoint(
             "category": "No content detected",
             "summary": "No text or QR code could be extracted from the image.",
             "indicators": [],
-            "recommended_actions": [
+            "recommended_actions": localize_actions([
                 "Ensure the screenshot is clear and contains readable text."
-            ],
+            ], lang),
             "provider_used": provider,
             "screenshot_analysis": {
                 "extracted_text": "",
@@ -148,7 +149,7 @@ async def analyze_screenshot_endpoint(
         ai_result = local.analyze(combined_message)
         actual_provider = "local"
 
-    final_result = calculate_final_risk(combined_message, ai_result)
+    final_result = calculate_final_risk(combined_message, ai_result, lang)
     final_result["provider_used"] = actual_provider
     final_result["provider_requested"] = provider
     final_result["screenshot_analysis"] = {
@@ -165,7 +166,10 @@ async def analyze_screenshot_endpoint(
 # ============================================================
 
 @app.post("/analyze-apk")
-async def analyze_apk_endpoint(file: UploadFile = File(...)):
+async def analyze_apk_endpoint(
+    file: UploadFile = File(...),
+    lang: str = "en"
+):
     if not file.filename or not file.filename.lower().endswith(".apk"):
         raise HTTPException(status_code=400, detail="Only .apk files are supported.")
 
@@ -192,9 +196,9 @@ async def analyze_apk_endpoint(file: UploadFile = File(...)):
             "permissions_count": 0,
             "dangerous_permissions": [],
             "indicators": [],
-            "recommended_actions": [
+            "recommended_actions": localize_actions([
                 "Do not install this file unless you fully trust the source."
-            ],
+            ], lang),
             "parse_success": False,
             "error": apk_result.get("error", "Unknown error")
         }
@@ -246,7 +250,7 @@ async def analyze_apk_endpoint(file: UploadFile = File(...)):
         "dangerous_permissions": apk_result["dangerous_permissions"],
         "permissions": apk_result["permissions"],
         "indicators": apk_result["indicators"],
-        "recommended_actions": actions,
+        "recommended_actions": localize_actions(actions, lang),
         "parse_success": True,
         "security_engine": {
             "apk_score": apk_score,

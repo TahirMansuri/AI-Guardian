@@ -1,509 +1,1398 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>AI Guardian | Digital Threat Intelligence</title>
-<style>
-*{box-sizing:border-box;margin:0;padding:0}
-:root{--bg:#07111f;--card:#0e1d31;--border:#1d344e;--text:#f4f7fb;--muted:#8ea3b9;--dim:#60758c;--blue:#38bdf8;--teal:#2dd4bf;--red:#ef4444;--orange:#f97316;--yellow:#f59e0b;--green:#22c55e}
-body{min-height:100vh;background:radial-gradient(circle at 15% 10%,rgba(56,189,248,.08),transparent 30%),radial-gradient(circle at 85% 20%,rgba(45,212,191,.06),transparent 30%),var(--bg);color:var(--text);font-family:Inter,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
-.topbar{height:72px;border-bottom:1px solid var(--border);background:rgba(7,17,31,.88);backdrop-filter:blur(14px);display:flex;align-items:center;justify-content:space-between;padding:0 40px;position:sticky;top:0;z-index:10}
-.brand{display:flex;align-items:center;gap:14px}
-.brand-icon{width:42px;height:42px;border-radius:11px;background:linear-gradient(135deg,#0ea5e9,#14b8a6);display:flex;align-items:center;justify-content:center;font-size:22px;box-shadow:0 0 25px rgba(45,212,191,.22)}
-.brand-text h1{font-size:18px}
-.brand-text span{display:block;color:var(--dim);font-size:11px;margin-top:2px;letter-spacing:.5px;text-transform:uppercase}
-.status{display:flex;align-items:center;gap:9px;padding:8px 13px;border:1px solid rgba(34,197,94,.2);border-radius:8px;background:rgba(34,197,94,.05);color:#8ee6a8;font-size:12px;font-weight:600}
-.dot{width:7px;height:7px;border-radius:50%;background:var(--green);box-shadow:0 0 10px rgba(34,197,94,.8)}
-.main{max-width:1380px;margin:auto;padding:44px 40px 70px}
-.hero{margin-bottom:34px}
-.hero-label{display:flex;gap:8px;color:var(--teal);font-size:12px;font-weight:700;letter-spacing:1.2px;text-transform:uppercase;margin-bottom:12px}
-.hero h2{font-size:clamp(30px,4vw,46px);line-height:1.08;letter-spacing:-1.5px;margin-bottom:12px}
-.hero h2 span{color:var(--blue)}
-.hero p{max-width:760px;color:var(--muted);font-size:15px;line-height:1.7}
-.tabs{display:flex;gap:8px;margin-bottom:16px;flex-wrap:wrap}
-.tab{padding:9px 16px;border-radius:8px;border:1px solid var(--border);background:rgba(255,255,255,.02);color:var(--muted);font-size:12px;font-weight:600;cursor:pointer}
-.tab.active{background:linear-gradient(135deg,#0ea5e9,#14b8a6);color:#fff;border-color:transparent}
-.grid{display:grid;grid-template-columns:minmax(0,1.05fr) minmax(0,.95fr);gap:22px;align-items:start}
-.panel{background:linear-gradient(145deg,rgba(14,29,49,.96),rgba(9,22,38,.96));border:1px solid var(--risk-color,var(--border));border-radius:16px;box-shadow:0 20px 50px rgba(0,0,0,.35);overflow:hidden;transition:all .5s ease}
-#resultPanel.has-risk{animation:panelGlow 2s infinite alternate}
-@keyframes panelGlow{0%{box-shadow:0 20px 50px rgba(0,0,0,.35),0 0 5px var(--risk-color,transparent)}100%{box-shadow:0 20px 50px rgba(0,0,0,.45),0 0 25px var(--risk-color,transparent)}}
-.panel-header{padding:19px 22px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between}
-.panel-title{display:flex;align-items:center;gap:10px;font-size:14px;font-weight:700}
-.icon{width:30px;height:30px;border-radius:8px;display:flex;align-items:center;justify-content:center;background:rgba(56,189,248,.1);color:var(--blue)}
-.tag{font-size:10px;color:var(--dim)}
-.body{padding:22px}
-textarea{width:100%;min-height:250px;resize:vertical;padding:18px;border:1px solid #25405d;border-radius:11px;background:#081522;color:var(--text);font:14px inherit;line-height:1.7;outline:none}
-textarea:focus{border-color:rgba(56,189,248,.65);box-shadow:0 0 0 3px rgba(56,189,248,.08)}
-.dropzone{border:2px dashed #25405d;border-radius:11px;padding:40px 20px;text-align:center;background:#081522;cursor:pointer;transition:all .2s}
-.dropzone:hover,.dropzone.drag{border-color:rgba(56,189,248,.65);background:rgba(56,189,248,.04)}
-.dropzone-icon{font-size:32px;margin-bottom:10px;color:var(--blue)}
-.dropzone-text{color:var(--muted);font-size:13px;margin-bottom:6px}
-.dropzone-hint{color:var(--dim);font-size:11px}
-.preview{margin-top:14px;display:none}
-.preview img{max-width:100%;max-height:250px;border-radius:8px;border:1px solid var(--border)}
-.file-info{background:rgba(56,189,248,.05);border:1px solid rgba(56,189,248,.15);border-radius:8px;padding:12px;margin-top:14px;font-size:12px;color:var(--muted)}
-.footer-row{display:flex;align-items:center;justify-content:space-between;margin-top:12px}
-.hint{color:var(--dim);font-size:11px}
-.button{border:0;border-radius:9px;padding:12px 19px;background:linear-gradient(135deg,#0ea5e9,#14b8a6);color:#fff;font-size:13px;font-weight:700;cursor:pointer}
-.button:disabled{opacity:.6;cursor:wait}
-.examples{display:flex;flex-wrap:wrap;gap:8px;margin-top:18px}
-.example{border:1px solid var(--border);background:rgba(255,255,255,.02);color:var(--muted);padding:7px 10px;border-radius:7px;font-size:11px;cursor:pointer}
-.empty{min-height:380px;display:flex;align-items:center;justify-content:center;text-align:center;color:var(--dim)}
-.empty-icon{font-size:28px;margin-bottom:18px}
-.result{display:none}
-.risk-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:22px;padding:16px 20px;border-radius:12px;background:rgba(0,0,0,.2);border:1px solid var(--risk-color,transparent);animation:riskBoxGlow 1.5s infinite alternate;transition:all .5s ease}
-@keyframes riskBoxGlow{0%{box-shadow:0 0 5px var(--risk-color,transparent),inset 0 0 5px var(--risk-color,transparent)}100%{box-shadow:0 0 25px var(--risk-color,transparent),inset 0 0 12px var(--risk-color,transparent)}}
-.label{font-size:11px;color:var(--dim);text-transform:uppercase;letter-spacing:1px;margin-bottom:7px}
-.risk{font-size:31px;font-weight:800}
-.score{text-align:right}
-.score-num{font-size:27px;font-weight:800}
-.score-label{color:var(--dim);font-size:10px;text-transform:uppercase;letter-spacing:1px}
-.progress{height:7px;background:#16283d;border-radius:10px;overflow:hidden;margin-top:15px}
-.bar{height:100%;width:0;border-radius:10px;transition:width .8s ease}
-.category{display:inline-flex;margin-top:14px;padding:6px 10px;border-radius:6px;border:1px solid var(--risk-color,var(--border));background:rgba(255,255,255,.025);color:var(--text);text-shadow:0 0 8px var(--risk-color,transparent);animation:riskBoxGlow 1.5s infinite alternate;font-size:11px;font-weight:600;transition:all .5s ease}
-.summary{color:var(--muted);font-size:13px;line-height:1.7;padding:15px;border-left:2px solid var(--blue);background:rgba(56,189,248,.035);margin:18px 0 24px}
-.heading{font-size:12px;text-transform:uppercase;letter-spacing:.9px;color:var(--muted);margin-bottom:12px}
-.indicator{padding:13px 14px;background:rgba(255,255,255,.025);border:1px solid rgba(255,255,255,.05);border-radius:9px;margin-bottom:8px}
-.itype{color:#fca5a5;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;margin-bottom:4px}
-.idesc{color:var(--muted);font-size:12px;line-height:1.55}
-.actions{margin-top:22px;padding-top:20px;border-top:1px solid var(--border)}
-.action{display:flex;gap:9px;color:#b8e8c5;font-size:12px;line-height:1.5;margin-bottom:8px}
-.check{color:var(--green);font-weight:700}
-.meta-section{margin-top:22px;padding-top:20px;border-top:1px solid var(--border)}
-.meta-box{background:rgba(56,189,248,.04);border:1px solid rgba(56,189,248,.15);border-radius:9px;padding:12px 14px;font-size:12px;color:var(--muted);line-height:1.6;white-space:pre-wrap;word-break:break-word;max-height:150px;overflow-y:auto}
-.qr-item{background:rgba(45,212,191,.05);border:1px solid rgba(45,212,191,.2);border-radius:8px;padding:10px 12px;font-size:12px;color:#a7f3d0;margin-bottom:8px;word-break:break-all;font-family:monospace}
-.perm-list{display:flex;flex-wrap:wrap;gap:6px;margin-top:10px}
-.perm-tag{background:rgba(239,68,68,.08);border:1px solid rgba(239,68,68,.25);color:#fca5a5;padding:4px 9px;border-radius:6px;font-size:11px;font-family:monospace}
-.perm-tag.safe{background:rgba(34,197,94,.05);border-color:rgba(34,197,94,.2);color:#a7f3d0}
-.kv{display:flex;justify-content:space-between;padding:6px 0;font-size:12px;border-bottom:1px solid rgba(255,255,255,.04)}
-.kv-label{color:var(--dim)}
-.kv-value{color:var(--text);font-family:monospace}
-.footer{margin-top:30px;display:flex;align-items:center;justify-content:space-between;padding:15px 2px;color:var(--dim);font-size:10px}
-.developer{margin-top:6px;font-size:13px;font-weight:700;color:var(--blue);text-shadow:0 0 8px rgba(56,189,248,.6),0 0 16px rgba(56,189,248,.4);animation:nameGlow 2s ease-in-out infinite}
-@keyframes nameGlow{0%,100%{text-shadow:0 0 8px rgba(56,189,248,.6),0 0 16px rgba(56,189,248,.4)}50%{text-shadow:0 0 15px rgba(56,189,248,1),0 0 30px rgba(56,189,248,.8),0 0 45px #fff}}
-.loading{display:inline-flex;align-items:center;gap:8px}
-.spinner{width:13px;height:13px;border:2px solid rgba(255,255,255,.2);border-top-color:#fff;border-radius:50%;animation:spin .8s linear infinite}
-@keyframes spin{to{transform:rotate(360deg)}}
-@keyframes sparkGlowText{0%,100%{text-shadow:0 0 8px currentColor,0 0 15px currentColor}50%{text-shadow:0 0 25px currentColor,0 0 40px currentColor,0 0 50px #fff}}
-.risk.high-risk-spark{animation:sparkGlowText .5s ease-in-out infinite alternate}
-@media(max-width:900px){.topbar{padding:12px 18px;height:auto;flex-wrap:wrap;gap:15px;justify-content:center}.status{display:none}.main{padding:30px 18px 50px}.grid{grid-template-columns:1fr}}
-@media(max-width:768px){.footer{flex-direction:column;gap:12px;text-align:center}.hero{text-align:center}}
-@media(max-width:500px){.hero h2{font-size:30px}.footer-row{align-items:stretch;flex-direction:column;gap:12px}.button{width:100%}.risk-head{flex-direction:column;gap:15px;text-align:center}.score{text-align:center}}
-</style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AI Guardian | Digital Threat Intelligence</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Devanagari:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0
+    }
+
+    :root {
+      --bg: #07111f;
+      --card: #0e1d31;
+      --border: #1d344e;
+      --text: #f4f7fb;
+      --muted: #8ea3b9;
+      --dim: #60758c;
+      --blue: #38bdf8;
+      --teal: #2dd4bf;
+      --red: #ef4444;
+      --orange: #f97316;
+      --yellow: #f59e0b;
+      --green: #22c55e
+    }
+
+    body {
+      min-height: 100vh;
+      background: radial-gradient(circle at 15% 10%, rgba(56, 189, 248, .08), transparent 30%), radial-gradient(circle at 85% 20%, rgba(45, 212, 191, .06), transparent 30%), var(--bg);
+      color: var(--text);
+      font-family: Inter, "Noto Sans Devanagari", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif
+    }
+
+    .topbar {
+      height: 72px;
+      border-bottom: 1px solid var(--border);
+      background: rgba(7, 17, 31, .88);
+      backdrop-filter: blur(14px);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 40px;
+      position: sticky;
+      top: 0;
+      z-index: 10
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 14px
+    }
+
+    .brand-icon {
+      width: 42px;
+      height: 42px;
+      border-radius: 11px;
+      background: linear-gradient(135deg, #0ea5e9, #14b8a6);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 22px;
+      box-shadow: 0 0 25px rgba(45, 212, 191, .22)
+    }
+
+    .brand-text h1 {
+      font-size: 18px
+    }
+
+    .brand-text span {
+      display: block;
+      color: var(--dim);
+      font-size: 11px;
+      margin-top: 2px;
+      letter-spacing: .5px;
+      text-transform: uppercase
+    }
+
+    .status {
+      display: flex;
+      align-items: center;
+      gap: 9px;
+      padding: 8px 13px;
+      border: 1px solid rgba(34, 197, 94, .2);
+      border-radius: 8px;
+      background: rgba(34, 197, 94, .05);
+      color: #8ee6a8;
+      font-size: 12px;
+      font-weight: 600
+    }
+
+    .lang-switch {
+      display: flex;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      overflow: hidden;
+      margin-right: 15px;
+    }
+
+    .lang-switch button {
+      border: 0;
+      background: rgba(255, 255, 255, 0.02);
+      color: var(--muted);
+      font-size: 12px;
+      font-weight: 700;
+      padding: 8px 14px;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .lang-switch button+button {
+      border-left: 1px solid var(--border)
+    }
+
+    .lang-switch button:hover {
+      background: rgba(255,255,255,0.05);
+    }
+
+    .lang-switch button.active {
+      background: linear-gradient(135deg, #0ea5e9, #14b8a6);
+      color: #fff;
+    }
+
+    .dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: var(--green);
+      box-shadow: 0 0 10px rgba(34, 197, 94, .8)
+    }
+
+    .main {
+      max-width: 1380px;
+      margin: auto;
+      padding: 44px 40px 70px
+    }
+
+    .hero {
+      margin-bottom: 34px
+    }
+
+    .hero-label {
+      display: flex;
+      gap: 8px;
+      color: var(--teal);
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: 1.2px;
+      text-transform: uppercase;
+      margin-bottom: 12px
+    }
+
+    .hero h2 {
+      font-size: clamp(30px, 4vw, 46px);
+      line-height: 1.08;
+      letter-spacing: -1.5px;
+      margin-bottom: 12px
+    }
+
+    .hero h2 span {
+      color: var(--blue)
+    }
+
+    .hero p {
+      max-width: 760px;
+      color: var(--muted);
+      font-size: 15px;
+      line-height: 1.7
+    }
+
+    .tabs {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 16px;
+      flex-wrap: wrap
+    }
+
+    .tab {
+      padding: 9px 16px;
+      border-radius: 8px;
+      border: 1px solid var(--border);
+      background: rgba(255, 255, 255, .02);
+      color: var(--muted);
+      font-size: 12px;
+      font-weight: 600;
+      cursor: pointer
+    }
+
+    .tab.active {
+      background: linear-gradient(135deg, #0ea5e9, #14b8a6);
+      color: #fff;
+      border-color: transparent
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: minmax(0, 1.05fr) minmax(0, .95fr);
+      gap: 22px;
+      align-items: start
+    }
+
+    .panel {
+      background: linear-gradient(145deg, rgba(14, 29, 49, .96), rgba(9, 22, 38, .96));
+      border: 1px solid var(--risk-color, var(--border));
+      border-radius: 16px;
+      box-shadow: 0 20px 50px rgba(0, 0, 0, .35);
+      overflow: hidden;
+      transition: all .5s ease
+    }
+
+    #resultPanel.has-risk {
+      animation: panelGlow 2s infinite alternate
+    }
+
+    @keyframes panelGlow {
+      0% {
+        box-shadow: 0 20px 50px rgba(0, 0, 0, .35), 0 0 5px var(--risk-color, transparent)
+      }
+
+      100% {
+        box-shadow: 0 20px 50px rgba(0, 0, 0, .45), 0 0 25px var(--risk-color, transparent)
+      }
+    }
+
+    .panel-header {
+      padding: 19px 22px;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: space-between
+    }
+
+    .panel-title {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 14px;
+      font-weight: 700
+    }
+
+    .icon {
+      width: 30px;
+      height: 30px;
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: rgba(56, 189, 248, .1);
+      color: var(--blue)
+    }
+
+    .tag {
+      font-size: 10px;
+      color: var(--dim)
+    }
+
+    .body {
+      padding: 22px
+    }
+
+    textarea {
+      width: 100%;
+      min-height: 250px;
+      resize: vertical;
+      padding: 18px;
+      border: 1px solid #25405d;
+      border-radius: 11px;
+      background: #081522;
+      color: var(--text);
+      font: 14px inherit;
+      line-height: 1.7;
+      outline: none
+    }
+
+    textarea:focus {
+      border-color: rgba(56, 189, 248, .65);
+      box-shadow: 0 0 0 3px rgba(56, 189, 248, .08)
+    }
+
+    .dropzone {
+      border: 2px dashed #25405d;
+      border-radius: 11px;
+      padding: 40px 20px;
+      text-align: center;
+      background: #081522;
+      cursor: pointer;
+      transition: all .2s
+    }
+
+    .dropzone:hover,
+    .dropzone.drag {
+      border-color: rgba(56, 189, 248, .65);
+      background: rgba(56, 189, 248, .04)
+    }
+
+    .dropzone-icon {
+      font-size: 32px;
+      margin-bottom: 10px;
+      color: var(--blue)
+    }
+
+    .dropzone-text {
+      color: var(--muted);
+      font-size: 13px;
+      margin-bottom: 6px
+    }
+
+    .dropzone-hint {
+      color: var(--dim);
+      font-size: 11px
+    }
+
+    .preview {
+      margin-top: 14px;
+      display: none
+    }
+
+    .preview img {
+      max-width: 100%;
+      max-height: 250px;
+      border-radius: 8px;
+      border: 1px solid var(--border)
+    }
+
+    .file-info {
+      background: rgba(56, 189, 248, .05);
+      border: 1px solid rgba(56, 189, 248, .15);
+      border-radius: 8px;
+      padding: 12px;
+      margin-top: 14px;
+      font-size: 12px;
+      color: var(--muted)
+    }
+
+    .footer-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-top: 12px
+    }
+
+    .hint {
+      color: var(--dim);
+      font-size: 11px
+    }
+
+    .button {
+      border: 0;
+      border-radius: 9px;
+      padding: 12px 19px;
+      background: linear-gradient(135deg, #0ea5e9, #14b8a6);
+      color: #fff;
+      font-size: 13px;
+      font-weight: 700;
+      cursor: pointer
+    }
+
+    .button:disabled {
+      opacity: .6;
+      cursor: wait
+    }
+
+    .examples {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 18px
+    }
+
+    .example {
+      border: 1px solid var(--border);
+      background: rgba(255, 255, 255, .02);
+      color: var(--muted);
+      padding: 7px 10px;
+      border-radius: 7px;
+      font-size: 11px;
+      cursor: pointer
+    }
+
+    .empty {
+      min-height: 380px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      color: var(--dim)
+    }
+
+    .empty-icon {
+      font-size: 28px;
+      margin-bottom: 18px
+    }
+
+    .result {
+      display: none
+    }
+
+    .risk-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 22px;
+      padding: 16px 20px;
+      border-radius: 12px;
+      background: rgba(0, 0, 0, .2);
+      border: 1px solid var(--risk-color, transparent);
+      animation: riskBoxGlow 1.5s infinite alternate;
+      transition: all .5s ease
+    }
+
+    @keyframes riskBoxGlow {
+      0% {
+        box-shadow: 0 0 5px var(--risk-color, transparent), inset 0 0 5px var(--risk-color, transparent)
+      }
+
+      100% {
+        box-shadow: 0 0 25px var(--risk-color, transparent), inset 0 0 12px var(--risk-color, transparent)
+      }
+    }
+
+    .label {
+      font-size: 11px;
+      color: var(--dim);
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      margin-bottom: 7px
+    }
+
+    .risk {
+      font-size: 31px;
+      font-weight: 800
+    }
+
+    .score {
+      text-align: right
+    }
+
+    .score-num {
+      font-size: 27px;
+      font-weight: 800
+    }
+
+    .score-label {
+      color: var(--dim);
+      font-size: 10px;
+      text-transform: uppercase;
+      letter-spacing: 1px
+    }
+
+    .progress {
+      height: 7px;
+      background: #16283d;
+      border-radius: 10px;
+      overflow: hidden;
+      margin-top: 15px
+    }
+
+    .bar {
+      height: 100%;
+      width: 0;
+      border-radius: 10px;
+      transition: width .8s ease
+    }
+
+    .category {
+      display: inline-flex;
+      margin-top: 14px;
+      padding: 6px 10px;
+      border-radius: 6px;
+      border: 1px solid var(--risk-color, var(--border));
+      background: rgba(255, 255, 255, .025);
+      color: var(--text);
+      text-shadow: 0 0 8px var(--risk-color, transparent);
+      animation: riskBoxGlow 1.5s infinite alternate;
+      font-size: 11px;
+      font-weight: 600;
+      transition: all .5s ease
+    }
+
+    .summary {
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.7;
+      padding: 15px;
+      border-left: 2px solid var(--blue);
+      background: rgba(56, 189, 248, .035);
+      margin: 18px 0 24px
+    }
+
+    .heading {
+      font-size: 12px;
+      text-transform: uppercase;
+      letter-spacing: .9px;
+      color: var(--muted);
+      margin-bottom: 12px
+    }
+
+    .indicator {
+      padding: 13px 14px;
+      background: rgba(255, 255, 255, .025);
+      border: 1px solid rgba(255, 255, 255, .05);
+      border-radius: 9px;
+      margin-bottom: 8px
+    }
+
+    .itype {
+      color: #fca5a5;
+      font-size: 11px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: .5px;
+      margin-bottom: 4px
+    }
+
+    .idesc {
+      color: var(--muted);
+      font-size: 12px;
+      line-height: 1.55
+    }
+
+    .actions {
+      margin-top: 22px;
+      padding-top: 20px;
+      border-top: 1px solid var(--border)
+    }
+
+    .action {
+      display: flex;
+      gap: 9px;
+      color: #b8e8c5;
+      font-size: 12px;
+      line-height: 1.5;
+      margin-bottom: 8px
+    }
+
+    .check {
+      color: var(--green);
+      font-weight: 700
+    }
+
+    .meta-section {
+      margin-top: 22px;
+      padding-top: 20px;
+      border-top: 1px solid var(--border)
+    }
+
+    .meta-box {
+      background: rgba(56, 189, 248, .04);
+      border: 1px solid rgba(56, 189, 248, .15);
+      border-radius: 9px;
+      padding: 12px 14px;
+      font-size: 12px;
+      color: var(--muted);
+      line-height: 1.6;
+      white-space: pre-wrap;
+      word-break: break-word;
+      max-height: 150px;
+      overflow-y: auto
+    }
+
+    .qr-item {
+      background: rgba(45, 212, 191, .05);
+      border: 1px solid rgba(45, 212, 191, .2);
+      border-radius: 8px;
+      padding: 10px 12px;
+      font-size: 12px;
+      color: #a7f3d0;
+      margin-bottom: 8px;
+      word-break: break-all;
+      font-family: monospace
+    }
+
+    .perm-list {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      margin-top: 10px
+    }
+
+    .perm-tag {
+      background: rgba(239, 68, 68, .08);
+      border: 1px solid rgba(239, 68, 68, .25);
+      color: #fca5a5;
+      padding: 4px 9px;
+      border-radius: 6px;
+      font-size: 11px;
+      font-family: monospace
+    }
+
+    .perm-tag.safe {
+      background: rgba(34, 197, 94, .05);
+      border-color: rgba(34, 197, 94, .2);
+      color: #a7f3d0
+    }
+
+    .kv {
+      display: flex;
+      justify-content: space-between;
+      padding: 6px 0;
+      font-size: 12px;
+      border-bottom: 1px solid rgba(255, 255, 255, .04)
+    }
+
+    .kv-label {
+      color: var(--dim)
+    }
+
+    .kv-value {
+      color: var(--text);
+      font-family: monospace
+    }
+
+    .footer {
+      margin-top: 30px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 15px 2px;
+      color: var(--dim);
+      font-size: 10px
+    }
+
+    .developer {
+      margin-top: 6px;
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--blue);
+      text-shadow: 0 0 8px rgba(56, 189, 248, .6), 0 0 16px rgba(56, 189, 248, .4);
+      animation: nameGlow 2s ease-in-out infinite
+    }
+
+    @keyframes nameGlow {
+      0%, 100% {
+        text-shadow: 0 0 8px rgba(56, 189, 248, .6), 0 0 16px rgba(56, 189, 248, .4)
+      }
+      50% {
+        text-shadow: 0 0 15px rgba(56, 189, 248, 1), 0 0 30px rgba(56, 189, 248, .8), 0 0 45px #fff
+      }
+    }
+
+    .loading {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px
+    }
+
+    .spinner {
+      width: 13px;
+      height: 13px;
+      border: 2px solid rgba(255, 255, 255, .2);
+      border-top-color: #fff;
+      border-radius: 50%;
+      animation: spin .8s linear infinite
+    }
+
+    @keyframes spin {
+      to {
+        transform: rotate(360deg)
+      }
+    }
+
+    @keyframes sparkGlowText {
+      0%, 100% {
+        text-shadow: 0 0 8px currentColor, 0 0 15px currentColor
+      }
+      50% {
+        text-shadow: 0 0 25px currentColor, 0 0 40px currentColor, 0 0 50px #fff
+      }
+    }
+
+    .risk.high-risk-spark {
+      animation: sparkGlowText .5s ease-in-out infinite alternate
+    }
+
+    @media(max-width:900px) {
+      .topbar {
+        padding: 12px 18px;
+        height: auto;
+        flex-wrap: wrap;
+        gap: 15px;
+        justify-content: center
+      }
+
+      .status {
+        display: none
+      }
+
+      .main {
+        padding: 30px 18px 50px
+      }
+
+      .grid {
+        grid-template-columns: 1fr
+      }
+    }
+
+    @media(max-width:768px) {
+      .footer {
+        flex-direction: column;
+        gap: 12px;
+        text-align: center
+      }
+
+      .hero {
+        text-align: center
+      }
+    }
+
+    @media(max-width:500px) {
+      .hero h2 {
+        font-size: 30px
+      }
+
+      .footer-row {
+        align-items: stretch;
+        flex-direction: column;
+        gap: 12px
+      }
+
+      .button {
+        width: 100%
+      }
+
+      .risk-head {
+        flex-direction: column;
+        gap: 15px;
+        text-align: center
+      }
+
+      .score {
+        text-align: center
+      }
+    }
+  </style>
 </head>
+
 <body>
-<header class="topbar">
-<div class="brand">
-<div class="brand-icon">🛡️</div>
-<div class="brand-text"><h1>AI Guardian</h1><span>Digital Threat Intelligence</span></div>
-</div>
-<div style="display:flex;align-items:center;gap:20px">
-<div style="font-size:14px;white-space:nowrap">👨💻 Developed by - Asst. Prof. Tahir Mansuri</div>
-<div class="status"><span class="dot"></span><span>LOCAL AI • ONLINE</span></div>
-</div>
-</header>
+  <header class="topbar">
+    <div class="brand">
+      <div class="brand-icon">🛡️</div>
+      <div class="brand-text">
+        <h1>AI Guardian</h1><span data-i18n="appSubtitle">Digital Threat Intelligence</span>
+      </div>
+    </div>
+    <div style="display:flex;align-items:center;">
+      <div class="lang-switch" id="langSwitch">
+        <button type="button" class="active" data-lang="en" onclick="setLang('en')">EN</button>
+        <button type="button" data-lang="hi" onclick="setLang('hi')">हिं</button>
+        <button type="button" data-lang="mr" onclick="setLang('mr')">मरा</button>
+      </div>
+      <div style="font-size:14px;white-space:nowrap;margin-right:20px" data-i18n="devBy">💻 Developed by - Asst. Prof. Tahir Mansuri</div>
+      <div class="status"><span class="dot"></span><span data-i18n="statusOnline">LOCAL AI • ONLINE</span></div>
+    </div>
+  </header>
 
-<main class="main">
-<section class="hero">
-<div class="hero-label"><span>●</span> AI-Powered Digital Safety</div>
-<h2>Detect threats before <span>they become victims.</span></h2>
-<p>Analyze suspicious messages, screenshots and APK files using local AI. AI Guardian identifies scam indicators, explains the risk and recommends safer actions — without sending your data to the cloud.</p>
-</section>
+  <main class="main">
+    <section class="hero">
+      <div class="hero-label"><span>●</span> <span data-i18n="heroLabel">AI-Powered Digital Safety</span></div>
+      <h2 data-i18n-html="heroTitle">Detect threats before <span>they become victims.</span></h2>
+      <p data-i18n="heroDesc">Analyze suspicious messages, screenshots and APK files using local AI. AI Guardian identifies scam indicators,
+        explains the risk and recommends safer actions — without sending your data to the cloud.</p>
+    </section>
 
-<section class="grid">
-<div class="panel">
-<div class="panel-header">
-<div class="panel-title"><div class="icon">◉</div>Threat Analysis</div>
-<span class="tag" id="inputTag">TEXT ANALYSIS</span>
-</div>
-<div class="body">
-<div style="margin-bottom:14px">
-  <label style="font-size:11px;color:#60758c;text-transform:uppercase;letter-spacing:1px;display:block;margin-bottom:6px">
-    Analysis Engine
-  </label>
-  <select id="providerSelect" style="width:100%;padding:10px 12px;border-radius:8px;background:#081522;color:#f4f7fb;border:1px solid #25405d;font-size:13px;outline:none">
-    <option value="local">🖥️ Local Qwen2.5-7B (Offline · Private)</option>
-    <option value="openai" disabled>☁️ OpenAI GPT-4o-mini (Cloud)</option>
-    <option value="gemini" disabled>☁️ Google Gemini (Cloud)</option>
-  </select>
-  <div id="providerHint" style="font-size:10px;color:#60758c;margin-top:6px">
-    All analysis runs locally. Your data never leaves this device.
-  </div>
-</div>
-<div class="tabs">
-<div class="tab active" data-mode="text" onclick="switchMode('text')">📝 Text</div>
-<div class="tab" data-mode="screenshot" onclick="switchMode('screenshot')">🖼️ Screenshot</div>
-<div class="tab" data-mode="apk" onclick="switchMode('apk')">📦 APK</div>
-</div>
+    <section class="grid">
+      <div class="panel">
+        <div class="panel-header">
+          <div class="panel-title">
+            <div class="icon">◉</div><span data-i18n="panelAnalysisTitle">Threat Analysis</span>
+          </div>
+          <span class="tag" id="inputTag" data-i18n="tagText">TEXT ANALYSIS</span>
+        </div>
+        <div class="body">
+          <div style="margin-bottom:14px">
+            <label data-i18n="engineLabel" style="font-size:11px;color:#60758c;text-transform:uppercase;letter-spacing:1px;display:block;margin-bottom:6px">
+              Analysis Engine
+            </label>
+            <select id="providerSelect"
+              style="width:100%;padding:10px 12px;border-radius:8px;background:#081522;color:#f4f7fb;border:1px solid #25405d;font-size:13px;outline:none">
+              <option value="local" data-i18n="optLocal">🖥️ Local Qwen2.5-7B (Offline · Private)</option>
+              <option value="openai" disabled data-i18n="optOpenAI">☁️ OpenAI GPT-4o-mini (Cloud)</option>
+              <option value="gemini" disabled data-i18n="optGemini">☁️ Google Gemini (Cloud)</option>
+            </select>
+            <div id="providerHint" style="font-size:10px;color:#60758c;margin-top:6px" data-i18n="engineHintLocal">
+              All analysis runs locally. Your data never leaves this device.
+            </div>
+          </div>
+          
+          <div class="tabs">
+            <div class="tab active" data-mode="text" onclick="switchMode('text')">📝 <span data-i18n="tabText">Text</span></div>
+            <div class="tab" data-mode="screenshot" onclick="switchMode('screenshot')">🖼️ <span data-i18n="tabScreenshot">Screenshot</span></div>
+            <div class="tab" data-mode="apk" onclick="switchMode('apk')">📦 <span data-i18n="tabApk">APK</span></div>
+          </div>
 
-<div id="textMode">
-<textarea id="message" placeholder="Paste a suspicious SMS, WhatsApp message, email or other digital communication here..."></textarea>
-<div class="footer-row">
-<div class="hint">Your message is analyzed locally.</div>
-<button id="analyzeButton" class="button" onclick="analyzeMessage()">Analyze Threat</button>
-</div>
-<div class="examples">
-<button class="example" onclick="loadExample(1)">Banking / KYC</button>
-<button class="example" onclick="loadExample(2)">Job Scam</button>
-<button class="example" onclick="loadExample(3)">UPI Scam</button>
-<button class="example" onclick="loadExample(4)">Digital Arrest</button>
-</div>
-</div>
+          <div id="textMode">
+            <textarea id="message" data-i18n-placeholder="msgPlaceholder" placeholder="Paste a suspicious SMS, WhatsApp message, email or other digital communication here..."></textarea>
+            <div class="footer-row">
+              <div class="hint" data-i18n="hintLocalText">Your message is analyzed locally.</div>
+              <button id="analyzeButton" class="button" onclick="analyzeMessage()" data-i18n="btnAnalyzeThreat">Analyze Threat</button>
+            </div>
+            <div class="examples">
+              <button class="example" onclick="loadExample(1)" data-i18n="ex1">Banking / KYC</button>
+              <button class="example" onclick="loadExample(2)" data-i18n="ex2">Job Scam</button>
+              <button class="example" onclick="loadExample(3)" data-i18n="ex3">UPI Scam</button>
+              <button class="example" onclick="loadExample(4)" data-i18n="ex4">Digital Arrest</button>
+            </div>
+          </div>
 
-<div id="screenshotMode" style="display:none">
-<div class="dropzone" id="dropzone" onclick="document.getElementById('fileInput').click()">
-<div class="dropzone-icon">🖼️</div>
-<div class="dropzone-text">Click to upload or drag & drop a screenshot</div>
-<div class="dropzone-hint">PNG, JPG, JPEG • Max 10 MB</div>
-</div>
-<input type="file" id="fileInput" accept="image/*" style="display:none" onchange="handleFileSelect(event)">
-<div class="preview" id="preview"><img id="previewImg" alt="Preview"></div>
-<div class="footer-row">
-<div class="hint">OCR + QR analysis runs locally.</div>
-<button id="analyzeScreenshotButton" class="button" onclick="analyzeScreenshot()" disabled>Analyze Screenshot</button>
-</div>
-</div>
+          <div id="screenshotMode" style="display:none">
+            <div class="dropzone" id="dropzone" onclick="document.getElementById('fileInput').click()">
+              <div class="dropzone-icon">🖼️</div>
+              <div class="dropzone-text" data-i18n="dropShot">Click to upload or drag & drop a screenshot</div>
+              <div class="dropzone-hint" data-i18n="dropShotHint">PNG, JPG, JPEG • Max 10 MB</div>
+            </div>
+            <input type="file" id="fileInput" accept="image/*" style="display:none" onchange="handleFileSelect(event)">
+            <div class="preview" id="preview"><img id="previewImg" alt="Preview"></div>
+            <div class="footer-row">
+              <div class="hint" data-i18n="hintOcr">OCR + QR analysis runs locally.</div>
+              <button id="analyzeScreenshotButton" class="button" onclick="analyzeScreenshot()" disabled data-i18n="btnAnalyzeShot">Analyze Screenshot</button>
+            </div>
+          </div>
 
-<div id="apkMode" style="display:none">
-<div class="dropzone" id="apkDropzone" onclick="document.getElementById('apkInput').click()">
-<div class="dropzone-icon">📦</div>
-<div class="dropzone-text">Click to upload or drag & drop an APK file</div>
-<div class="dropzone-hint">.apk • Max 50 MB • Static analysis only (never executed)</div>
-</div>
-<input type="file" id="apkInput" accept=".apk,application/vnd.android.package-archive" style="display:none" onchange="handleApkSelect(event)">
-<div class="file-info" id="apkInfo" style="display:none"></div>
-<div class="footer-row">
-<div class="hint">Metadata analysis runs locally. The APK is not executed.</div>
-<button id="analyzeApkButton" class="button" onclick="analyzeApk()" disabled>Analyze APK</button>
-</div>
-</div>
-</div>
-</div>
+          <div id="apkMode" style="display:none">
+            <div class="dropzone" id="apkDropzone" onclick="document.getElementById('apkInput').click()">
+              <div class="dropzone-icon">📦</div>
+              <div class="dropzone-text" data-i18n="dropApk">Click to upload or drag & drop an APK file</div>
+              <div class="dropzone-hint" data-i18n="dropApkHint">.apk • Max 50 MB • Static analysis only (never executed)</div>
+            </div>
+            <input type="file" id="apkInput" accept=".apk,application/vnd.android.package-archive" style="display:none" onchange="handleApkSelect(event)">
+            <div class="file-info" id="apkInfo" style="display:none"></div>
+            <div class="footer-row">
+              <div class="hint" data-i18n="hintApk">Metadata analysis runs locally. The APK is not executed.</div>
+              <button id="analyzeApkButton" class="button" onclick="analyzeApk()" disabled data-i18n="btnAnalyzeApk">Analyze APK</button>
+            </div>
+          </div>
+        </div>
+      </div>
 
-<div id="resultPanel" class="panel">
-<div class="panel-header">
-<div class="panel-title"><div class="icon">◈</div>Threat Assessment</div>
-<span class="tag">AI ANALYSIS</span>
-</div>
-<div class="body">
-<div id="emptyState" class="empty">
-<div>
-<div class="empty-icon">◇</div>
-<div style="font-size:14px;color:#8ea3b9;margin-bottom:6px">No analysis available</div>
-<div style="font-size:11px">Submit a message, screenshot or APK to begin threat analysis.</div>
-</div>
-</div>
-<div id="result" class="result">
-<div class="risk-head">
-<div><div class="label">Risk Level</div><div id="risk" class="risk">—</div></div>
-<div class="score"><div id="score" class="score-num">0</div><div class="score-label">Risk Score / 100</div></div>
-</div>
-<div class="progress"><div id="progressBar" class="bar"></div></div>
-<div id="category" class="category">—</div>
-<div id="summary" class="summary">—</div>
-<div id="extraMeta"></div>
-<div><div class="heading">Detected Indicators</div><div id="indicators"></div></div>
-<div class="actions"><div class="heading">Recommended Actions</div><div id="actions"></div></div>
-</div>
-</div>
-</div>
-</section>
+      <div id="resultPanel" class="panel">
+        <div class="panel-header">
+          <div class="panel-title">
+            <div class="icon">◈</div><span data-i18n="panelAssessTitle">Threat Assessment</span>
+          </div>
+          <span class="tag" data-i18n="tagAiAnalysis">AI ANALYSIS</span>
+        </div>
+        <div class="body">
+          <div id="emptyState" class="empty">
+            <div>
+              <div class="empty-icon">◇</div>
+              <div style="font-size:14px;color:#8ea3b9;margin-bottom:6px" data-i18n="emptyTitle">No analysis available</div>
+              <div style="font-size:11px" data-i18n="emptyDesc">Submit a message, screenshot or APK to begin threat analysis.</div>
+            </div>
+          </div>
+          <div id="result" class="result">
+            <div class="risk-head">
+              <div>
+                <div class="label" data-i18n="riskLevelLabel">Risk Level</div>
+                <div id="risk" class="risk">—</div>
+              </div>
+              <div class="score">
+                <div id="score" class="score-num">0</div>
+                <div class="score-label" data-i18n="riskScoreLabel">Risk Score / 100</div>
+              </div>
+            </div>
+            <div class="progress">
+              <div id="progressBar" class="bar"></div>
+            </div>
+            <div id="category" class="category">—</div>
+            <div id="summary" class="summary">—</div>
+            <div id="extraMeta"></div>
+            <div>
+              <div class="heading" data-i18n="indicatorsHeading">Detected Indicators</div>
+              <div id="indicators"></div>
+            </div>
+            <div class="actions">
+              <div class="heading" data-i18n="actionsHeading">Recommended Actions</div>
+              <div id="actions"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
 
-<footer class="footer">
-<div style="flex:1;text-align:left"><div>AI Guardian • Local AI Security Research Prototype</div></div>
-<div style="flex:1;text-align:center;font-size:11px;opacity:.9;font-weight:600;color:var(--muted)">Developed by - Asst. Prof. Tahir Mansuri</div>
-<div style="flex:1;display:flex;justify-content:flex-end;align-items:center;gap:7px"><span class="dot"></span><span>Local AI Inference</span></div>
-</footer>
-</main>
+    <footer class="footer">
+      <div style="flex:1;text-align:left">
+        <div data-i18n="footerLeft">AI Guardian • Local AI Security Research Prototype</div>
+      </div>
+      <div style="flex:1;text-align:center;font-size:11px;opacity:.9;font-weight:600;color:var(--muted)" data-i18n="devBy2">Developed by - Asst. Prof. Tahir Mansuri</div>
+      <div style="flex:1;display:flex;justify-content:flex-end;align-items:center;gap:7px"><span class="dot"></span><span data-i18n="footerRight">Local AI Inference</span></div>
+    </footer>
+  </main>
 
-<script>
-const API_BASE_URL = "";
-let currentMode = "text";
-let selectedFile = null;
-let selectedApk = null;
+  <script>
+    const API_BASE_URL = "";
+    let currentMode = "text";
+    let selectedFile = null;
+    let selectedApk = null;
 
-function switchMode(mode){
-  currentMode = mode;
-  document.querySelectorAll(".tab").forEach(t=>t.classList.remove("active"));
-  document.querySelector(`.tab[data-mode="${mode}"]`).classList.add("active");
-  document.getElementById("textMode").style.display = mode === "text" ? "block" : "none";
-  document.getElementById("screenshotMode").style.display = mode === "screenshot" ? "block" : "none";
-  document.getElementById("apkMode").style.display = mode === "apk" ? "block" : "none";
-  const tags = {text:"TEXT ANALYSIS", screenshot:"SCREENSHOT ANALYSIS", apk:"APK ANALYSIS"};
-  document.getElementById("inputTag").innerText = tags[mode];
-}
+    /* ---------------- i18n ---------------- */
+    let currentLang = localStorage.getItem("ai_guardian_lang") || "en";
+    
+    const I18N = {
+      en: {
+        appSubtitle: "Digital Threat Intelligence",
+        devBy: "💻 Developed by - Asst. Prof. Tahir Mansuri",
+        devBy2: "Developed by - Asst. Prof. Tahir Mansuri",
+        statusOnline: "LOCAL AI • ONLINE",
+        heroLabel: "AI-Powered Digital Safety",
+        heroTitle: 'Detect threats before <span>they become victims.</span>',
+        heroDesc: "Analyze suspicious messages, screenshots and APK files using local AI. AI Guardian identifies scam indicators, explains the risk and recommends safer actions — without sending your data to the cloud.",
+        panelAnalysisTitle: "Threat Analysis",
+        tagText: "TEXT ANALYSIS", tagScreenshot: "SCREENSHOT ANALYSIS", tagApk: "APK ANALYSIS",
+        engineLabel: "Analysis Engine",
+        optLocal: "🖥️ Local Qwen2.5-7B (Offline · Private)",
+        optOpenAI: "☁️ OpenAI GPT-4o-mini (Cloud)",
+        optGemini: "☁️ Google Gemini (Cloud)",
+        engineHintLocal: "All analysis runs locally. Your data never leaves this device.",
+        engineHintCloud: "⚠ Cloud mode: message text will be sent to {provider}'s API.",
+        tabText: "Text", tabScreenshot: "Screenshot", tabApk: "APK",
+        msgPlaceholder: "Paste a suspicious SMS, WhatsApp message, email or other digital communication here...",
+        hintLocalText: "Your message is analyzed locally.",
+        btnAnalyzeThreat: "Analyze Threat",
+        ex1: "Banking / KYC", ex2: "Job Scam", ex3: "UPI Scam", ex4: "Digital Arrest",
+        dropShot: "Click to upload or drag & drop a screenshot",
+        dropShotHint: "PNG, JPG, JPEG • Max 10 MB",
+        hintOcr: "OCR + QR analysis runs locally.",
+        btnAnalyzeShot: "Analyze Screenshot",
+        dropApk: "Click to upload or drag & drop an APK file",
+        dropApkHint: ".apk • Max 50 MB • Static analysis only (never executed)",
+        hintApk: "Metadata analysis runs locally. The APK is not executed.",
+        btnAnalyzeApk: "Analyze APK",
+        panelAssessTitle: "Threat Assessment",
+        tagAiAnalysis: "AI ANALYSIS",
+        emptyTitle: "No analysis available",
+        emptyDesc: "Submit a message, screenshot or APK to begin threat analysis.",
+        riskLevelLabel: "Risk Level",
+        riskScoreLabel: "Risk Score / 100",
+        indicatorsHeading: "Detected Indicators",
+        actionsHeading: "Recommended Actions",
+        screenshotAnalysisHeading: "Screenshot Analysis",
+        packageNameLabel: "Package Name",
+        appNameLabel: "App Name",
+        totalPermissionsLabel: "Total Permissions",
+        dangerousPermissionsLabel: "Dangerous Permissions",
+        dangerousPermissionsDetected: "Dangerous Permissions Detected",
+        extractedTextHeading: "Extracted Text (OCR):",
+        qrCodesDetected: "QR Codes Detected:",
+        noTextDetected: "No text detected via OCR.",
+        footerLeft: "AI Guardian • Local AI Security Research Prototype",
+        footerRight: "Local AI Inference",
+        analyzing: "Analyzing...", analyzingStatus: "Analyzing", analyzingMsg: "AI Guardian is analyzing...",
+        failStatus: "Analysis Failed", failCategory: "Connection Error", failMsg: "Unable to connect to backend. ",
+        unclassified: "Unclassified",
+        examples: [
+          "URGENT: Your SBI account will be blocked today. Click https://example.com immediately to complete KYC.",
+          "Congratulations! You have been selected for a work from home job. Pay ₹2,999 registration fee to activate your employment immediately.",
+          "Your UPI refund is pending. Scan this QR code and enter your UPI PIN to receive your refund immediately.",
+          "CBI NOTICE: Your Aadhaar has been linked to illegal transactions. Stay on a video call and transfer ₹50,000 immediately to avoid arrest."
+        ]
+      },
+      hi: {
+        appSubtitle: "डिजिटल थ्रेट इंटेलिजेंस",
+        devBy: "💻 डेवलपर - सहायक प्रोफेसर Tahir Mansuri",
+        devBy2: "डेवलपर - सहायक प्रोफेसर Tahir Mansuri",
+        statusOnline: "लोकल AI • ऑनलाइन",
+        heroLabel: "AI-संचालित डिजिटल सुरक्षा",
+        heroTitle: 'खतरों को पहचानें, <span>शिकार बनने से पहले।</span>',
+        heroDesc: "संदिग्ध मैसेज, स्क्रीनशॉट और APK फ़ाइलों का विश्लेषण लोकल AI से करें। AI Guardian स्कैम के संकेत पहचानता है, जोखिम समझाता है और सुरक्षित कदम सुझाता है — आपका डेटा कभी cloud पर नहीं भेजा जाता।",
+        panelAnalysisTitle: "थ्रेट एनालिसिस",
+        tagText: "टेक्स्ट एनालिसिस", tagScreenshot: "स्क्रीनशॉट एनालिसिस", tagApk: "APK एनालिसिस",
+        engineLabel: "एनालिसिस इंजन",
+        optLocal: "🖥️ लोकल Qwen2.5-7B (ऑफ़लाइन · प्राइवेट)",
+        optOpenAI: "☁️ OpenAI GPT-4o-mini (क्लाउड)",
+        optGemini: "☁️ Google Gemini (क्लाउड)",
+        engineHintLocal: "सारा विश्लेषण लोकल मशीन पर होता है। डेटा कभी बाहर नहीं जाता।",
+        engineHintCloud: "⚠ क्लाउड मोड: मैसेज {provider} के API को भेजा जाएगा।",
+        tabText: "टेक्स्ट", tabScreenshot: "स्क्रीनशॉट", tabApk: "APK",
+        msgPlaceholder: "यहाँ संदिग्ध SMS, WhatsApp मैसेज, ईमेल या अन्य डिजिटल मैसेज पेस्ट करें...",
+        hintLocalText: "आपका मैसेज लोकल ही विश्लेषित होता है।",
+        btnAnalyzeThreat: "खतरे की जाँच करें",
+        ex1: "बैंकिंग / KYC", ex2: "जॉब स्कैम", ex3: "UPI स्कैम", ex4: "डिजिटल अरेस्ट",
+        dropShot: "स्क्रीनशॉट अपलोड करने के लिए क्लिक करें या ड्रैग करें",
+        dropShotHint: "PNG, JPG, JPEG • अधिकतम 10 MB",
+        hintOcr: "OCR और QR विश्लेषण लोकल ही चलता है।",
+        btnAnalyzeShot: "स्क्रीनशॉट की जाँच करें",
+        dropApk: "APK फ़ाइल अपलोड करने के लिए क्लिक करें या ड्रैग करें",
+        dropApkHint: ".apk • अधिकतम 50 MB • केवल स्टेटिक विश्लेषण (रन नहीं किया जाता)",
+        hintApk: "मेटाडेटा विश्लेषण लोकल ही चलता है। APK को रन नहीं किया जाता।",
+        btnAnalyzeApk: "APK की जाँच करें",
+        panelAssessTitle: "थ्रेट असेसमेंट (परिणाम)",
+        tagAiAnalysis: "AI एनालिसिस",
+        emptyTitle: "कोई परिणाम उपलब्ध नहीं",
+        emptyDesc: "विश्लेषण शुरू करने के लिए कोई मैसेज, स्क्रीनशॉट या APK सबमिट करें।",
+        riskLevelLabel: "खतरे का स्तर",
+        riskScoreLabel: "रिस्क स्कोर / 100",
+        indicatorsHeading: "खोजे गए संकेत",
+        actionsHeading: "सुझाए गए कदम",
+        screenshotAnalysisHeading: "स्क्रीनशॉट विश्लेषण",
+        packageNameLabel: "पैकेज का नाम",
+        appNameLabel: "ऐप का नाम",
+        totalPermissionsLabel: "कुल अनुमतियां",
+        dangerousPermissionsLabel: "खतरनाक अनुमतियां",
+        dangerousPermissionsDetected: "खतरनाक अनुमतियां पाई गईं",
+        extractedTextHeading: "निकाला गया टेक्स्ट (OCR):",
+        qrCodesDetected: "QR कोड पाए गए:",
+        noTextDetected: "OCR द्वारा कोई टेक्स्ट नहीं मिला।",
+        footerLeft: "AI Guardian • लोकल AI सुरक्षा रिसर्च प्रोटोटाइप",
+        footerRight: "लोकल AI अनुमान",
+        analyzing: "जाँच हो रही है...", analyzingStatus: "जाँच जारी है", analyzingMsg: "AI Guardian विश्लेषण कर रहा है...",
+        failStatus: "विश्लेषण विफल", failCategory: "कनेक्शन त्रुटि", failMsg: "बैकएंड से कनेक्ट नहीं हो सका। ",
+        unclassified: "अवर्गीकृत",
+        examples: [
+          "ज़रूरी सूचना: आपका SBI खाता आज ब्लॉक कर दिया जाएगा। KYC पूरी करने के लिए तुरंत https://example.com पर क्लिक करें।",
+          "बधाई हो! आपको वर्क फ्रॉम होम जॉब के लिए चुना गया है। तुरंत काम शुरू करने के लिए ₹2,999 रजिस्ट्रेशन फीस भरें।",
+          "आपका UPI रिफंड अटका हुआ है। तुरंत रिफंड पाने के लिए इस QR कोड को स्कैन करें और अपना UPI पिन डालें।",
+          "CBI नोटिस: आपका आधार कार्ड गैर-कानूनी लेनदेन से जुड़ा है। गिरफ्तारी से बचने के लिए वीडियो कॉल पर बने रहें और ₹50,000 ट्रांसफर करें।"
+        ]
+      },
+      mr: {
+        appSubtitle: "डिजिटल थ्रेट इंटेलिजेंस",
+        devBy: "💻 डेव्हलपर - सहाय्यक प्राध्यापक Tahir Mansuri",
+        devBy2: "डेव्हलपर - सहाय्यक प्राध्यापक Tahir Mansuri",
+        statusOnline: "लोकल AI • ऑनलाईन",
+        heroLabel: "AI-संचालित डिजिटल सुरक्षा",
+        heroTitle: 'धोके ओळखा, <span>बळी पडण्यापूर्वी.</span>',
+        heroDesc: "संशयास्पद मेसेज, स्क्रीनशॉट्स आणि APK फाइल्सचे लोकल AI वापरून विश्लेषण करा. AI Guardian फसवणुकीचे संकेत शोधतो, धोका समजावतो आणि सुरक्षित कृती सुचवतो — तुमचा डेटा कधीही cloud वर पाठवला जात नाही.",
+        panelAnalysisTitle: "थ्रेट एनालिसिस",
+        tagText: "टेक्स्ट एनालिसिस", tagScreenshot: "स्क्रीनशॉट एनालिसिस", tagApk: "APK एनालिसिस",
+        engineLabel: "एनालिसिस इंजिन",
+        optLocal: "🖥️ लोकल Qwen2.5-7B (ऑफलाईन · प्रायव्हेट)",
+        optOpenAI: "☁️ OpenAI GPT-4o-mini (क्लाउड)",
+        optGemini: "☁️ Google Gemini (क्लाउड)",
+        engineHintLocal: "सर्व विश्लेषण लोकल मशीनवर होते. डेटा कधीही बाहेर जात नाही.",
+        engineHintCloud: "⚠ क्लाउड मोड: मेसेज {provider} च्या API ला पाठवला जाईल.",
+        tabText: "टेक्स्ट", tabScreenshot: "स्क्रीनशॉट", tabApk: "APK",
+        msgPlaceholder: "येथे संशयास्पद SMS, WhatsApp मेसेज, ईमेल किंवा अन्य डिजिटल मेसेज पेस्ट करा...",
+        hintLocalText: "तुमच्या मेसेजचे विश्लेषण लोकली होते.",
+        btnAnalyzeThreat: "धोका तपासा",
+        ex1: "बँकिंग / KYC", ex2: "जॉब स्कॅम", ex3: "UPI स्कॅम", ex4: "डिजिटल अरेस्ट",
+        dropShot: "स्क्रीनशॉट अपलोड करण्यासाठी क्लिक करा किंवा ड्रॅग करा",
+        dropShotHint: "PNG, JPG, JPEG • कमाल 10 MB",
+        hintOcr: "OCR आणि QR विश्लेषण लोकली चालते.",
+        btnAnalyzeShot: "स्क्रीनशॉट तपासा",
+        dropApk: "APK फाईल अपलोड करण्यासाठी क्लिक करा किंवा ड्रॅग करा",
+        dropApkHint: ".apk • कमाल 50 MB • फक्त स्टॅटिक विश्लेषण (रन केले जात नाही)",
+        hintApk: "मेटाडेटा विश्लेषण लोकली चालते. APK रन केले जात नाही.",
+        btnAnalyzeApk: "APK तपासा",
+        panelAssessTitle: "थ्रेट असेसमेंट (निकाल)",
+        tagAiAnalysis: "AI एनालिसिस",
+        emptyTitle: "कोणताही निकाल उपलब्ध नाही",
+        emptyDesc: "विश्लेषण सुरू करण्यासाठी मेसेज, स्क्रीनशॉट किंवा APK सबमिट करा.",
+        riskLevelLabel: "धोक्याची पातळी",
+        riskScoreLabel: "रिस्क स्कोअर / 100",
+        indicatorsHeading: "शोधलेले संकेत",
+        actionsHeading: "सुचवलेली कृती",
+        screenshotAnalysisHeading: "स्क्रीनशॉट विश्लेषण",
+        packageNameLabel: "पॅकेजचे नाव",
+        appNameLabel: "अॅपचे नाव",
+        totalPermissionsLabel: "एकूण परवानग्या",
+        dangerousPermissionsLabel: "धोकादायक परवानग्या",
+        dangerousPermissionsDetected: "धोकादायक परवानग्या सापडल्या",
+        extractedTextHeading: "काढलेला मजकूर (OCR):",
+        qrCodesDetected: "QR कोड सापडले:",
+        noTextDetected: "OCR द्वारे कोणताही मजकूर आढळला नाही.",
+        footerLeft: "AI Guardian • लोकल AI सुरक्षा रिसर्च प्रोटोटाइप",
+        footerRight: "लोकल AI इन्फरन्स",
+        analyzing: "तपासणी सुरू आहे...", analyzingStatus: "तपासणी सुरू", analyzingMsg: "AI Guardian विश्लेषण करत आहे...",
+        failStatus: "विश्लेषण अयशस्वी", failCategory: "कनेक्शन त्रुटी", failMsg: "बॅकएंडशी कनेक्ट होऊ शकलो नाही. ",
+        unclassified: "अवर्गीकृत",
+        examples: [
+          "महत्त्वाची सूचना: तुमचे SBI खाते आज ब्लॉक केले जाईल. KYC पूर्ण करण्यासाठी त्वरित https://example.com वर क्लिक करा.",
+          "अभिनंदन! तुमची वर्क फ्रॉम होम जॉबसाठी निवड झाली आहे. त्वरित नोकरी सुरू करण्यासाठी ₹2,999 रजिस्ट्रेशन फी भरा.",
+          "तुमचा UPI परतावा (Refund) प्रलंबित आहे. त्वरित परतावा मिळवण्यासाठी हा QR कोड स्कॅन करा आणि तुमचा UPI पिन टाका.",
+          "CBI नोटीस: तुमचे आधार कार्ड बेकायदेशीर व्यवहारांशी जोडले गेले आहे. अटकेपासून वाचण्यासाठी व्हिडिओ कॉलवर रहा आणि ₹50,000 ट्रान्सफर करा."
+        ]
+      }
+    };
 
-function loadExample(n){
-  const ex = {
-    1:"URGENT: Your SBI account will be blocked today. Click https://example.com immediately to complete KYC.",
-    2:"Congratulations! You have been selected for a work from home job. Pay ₹2,999 registration fee to activate your employment immediately.",
-    3:"Your UPI refund is pending. Scan this QR code and enter your UPI PIN to receive your refund immediately.",
-    4:"CBI NOTICE: Your Aadhaar has been linked to illegal transactions. Stay on a video call and transfer ₹50,000 immediately to avoid arrest."
-  };
-  document.getElementById("message").value = ex[n];
-}
+    function t(key) {
+      return I18N[currentLang][key] || I18N['en'][key] || key;
+    }
 
-const dropzone = document.getElementById("dropzone");
-["dragenter","dragover"].forEach(e=>dropzone.addEventListener(e,ev=>{ev.preventDefault();dropzone.classList.add("drag")}));
-["dragleave","drop"].forEach(e=>dropzone.addEventListener(e,ev=>{ev.preventDefault();dropzone.classList.remove("drag")}));
-dropzone.addEventListener("drop",ev=>{ev.preventDefault();const f=ev.dataTransfer.files;if(f.length)handleFile(f[0])});
+    function applyTranslations() {
+      document.querySelectorAll("[data-i18n]").forEach(el => {
+        el.innerText = t(el.getAttribute("data-i18n"));
+      });
+      document.querySelectorAll("[data-i18n-html]").forEach(el => {
+        el.innerHTML = t(el.getAttribute("data-i18n-html"));
+      });
+      document.querySelectorAll("[data-i18n-placeholder]").forEach(el => {
+        el.setAttribute("placeholder", t(el.getAttribute("data-i18n-placeholder")));
+      });
+      
+      const tagMap = { text: "tagText", screenshot: "tagScreenshot", apk: "tagApk" };
+      document.getElementById("inputTag").innerText = t(tagMap[currentMode]);
 
-const apkDropzone = document.getElementById("apkDropzone");
-["dragenter","dragover"].forEach(e=>apkDropzone.addEventListener(e,ev=>{ev.preventDefault();apkDropzone.classList.add("drag")}));
-["dragleave","drop"].forEach(e=>apkDropzone.addEventListener(e,ev=>{ev.preventDefault();apkDropzone.classList.remove("drag")}));
-apkDropzone.addEventListener("drop",ev=>{ev.preventDefault();const f=ev.dataTransfer.files;if(f.length)handleApk(f[0])});
+      const select = document.getElementById("providerSelect");
+      if (select.value === "local") {
+        document.getElementById("providerHint").innerText = t("engineHintLocal");
+      } else {
+        document.getElementById("providerHint").innerText = t("engineHintCloud").replace("{provider}", select.value.toUpperCase());
+      }
+    }
 
-function handleFileSelect(ev){const f=ev.target.files;if(f.length)handleFile(f[0])}
-function handleApkSelect(ev){const f=ev.target.files;if(f.length)handleApk(f[0])}
+    function setLang(lang) {
+      currentLang = lang;
+      localStorage.setItem("ai_guardian_lang", lang);
+      document.querySelectorAll(".lang-switch button").forEach(b => {
+        b.classList.toggle("active", b.getAttribute("data-lang") === lang);
+      });
+      applyTranslations();
+    }
 
-function handleFile(file){
-  if(!file.type.startsWith("image/")){alert("Please select an image file.");return}
-  if(file.size > 10*1024*1024){alert("File too large. Max 10 MB.");return}
-  selectedFile = file;
-  const reader = new FileReader();
-  reader.onload = e=>{
-    document.getElementById("previewImg").src = e.target.result;
-    document.getElementById("preview").style.display = "block";
-    document.getElementById("analyzeScreenshotButton").disabled = false;
-  };
-  reader.readAsDataURL(file);
-}
+    /* -------------------------------------- */
 
-function handleApk(file){
-  if(!file.name.toLowerCase().endsWith(".apk")){alert("Please select an .apk file.");return}
-  if(file.size > 50*1024*1024){alert("File too large. Max 50 MB.");return}
-  selectedApk = file;
-  const sizeMB = (file.size / (1024*1024)).toFixed(2);
-  const info = document.getElementById("apkInfo");
-  info.innerHTML = `<div class="kv"><span class="kv-label">File</span><span class="kv-value">${escapeHtml(file.name)}</span></div>
+    function switchMode(mode) {
+      currentMode = mode;
+      document.querySelectorAll(".tab").forEach(t => t.classList.remove("active"));
+      document.querySelector(`.tab[data-mode="${mode}"]`).classList.add("active");
+      document.getElementById("textMode").style.display = mode === "text" ? "block" : "none";
+      document.getElementById("screenshotMode").style.display = mode === "screenshot" ? "block" : "none";
+      document.getElementById("apkMode").style.display = mode === "apk" ? "block" : "none";
+      const tagMap = { text: "tagText", screenshot: "tagScreenshot", apk: "tagApk" };
+      document.getElementById("inputTag").innerText = t(tagMap[mode]);
+    }
+
+    function loadExample(n) {
+      document.getElementById("message").value = I18N[currentLang].examples[n-1];
+    }
+
+    const dropzone = document.getElementById("dropzone");
+    ["dragenter", "dragover"].forEach(e => dropzone.addEventListener(e, ev => { ev.preventDefault(); dropzone.classList.add("drag") }));
+    ["dragleave", "drop"].forEach(e => dropzone.addEventListener(e, ev => { ev.preventDefault(); dropzone.classList.remove("drag") }));
+    dropzone.addEventListener("drop", ev => { ev.preventDefault(); const f = ev.dataTransfer.files; if (f.length) handleFile(f[0]) });
+
+    const apkDropzone = document.getElementById("apkDropzone");
+    ["dragenter", "dragover"].forEach(e => apkDropzone.addEventListener(e, ev => { ev.preventDefault(); apkDropzone.classList.add("drag") }));
+    ["dragleave", "drop"].forEach(e => apkDropzone.addEventListener(e, ev => { ev.preventDefault(); apkDropzone.classList.remove("drag") }));
+    apkDropzone.addEventListener("drop", ev => { ev.preventDefault(); const f = ev.dataTransfer.files; if (f.length) handleApk(f[0]) });
+
+    function handleFileSelect(ev) { const f = ev.target.files; if (f.length) handleFile(f[0]) }
+    function handleApkSelect(ev) { const f = ev.target.files; if (f.length) handleApk(f[0]) }
+
+    function handleFile(file) {
+      if (!file.type.startsWith("image/")) { alert("Please select an image file."); return }
+      if (file.size > 10 * 1024 * 1024) { alert("File too large. Max 10 MB."); return }
+      selectedFile = file;
+      const reader = new FileReader();
+      reader.onload = e => {
+        document.getElementById("previewImg").src = e.target.result;
+        document.getElementById("preview").style.display = "block";
+        document.getElementById("analyzeScreenshotButton").disabled = false;
+      };
+      reader.readAsDataURL(file);
+    }
+
+    function handleApk(file) {
+      if (!file.name.toLowerCase().endsWith(".apk")) { alert("Please select an .apk file."); return }
+      if (file.size > 50 * 1024 * 1024) { alert("File too large. Max 50 MB."); return }
+      selectedApk = file;
+      const sizeMB = (file.size / (1024 * 1024)).toFixed(2);
+      const info = document.getElementById("apkInfo");
+      info.innerHTML = `<div class="kv"><span class="kv-label">File</span><span class="kv-value">${escapeHtml(file.name)}</span></div>
                     <div class="kv"><span class="kv-label">Size</span><span class="kv-value">${sizeMB} MB</span></div>`;
-  info.style.display = "block";
-  document.getElementById("analyzeApkButton").disabled = false;
-}
-
-async function analyzeMessage(){
-  const message = document.getElementById("message").value.trim();
-  if(!message){alert("Please enter a message for analysis.");return}
-  const btn = document.getElementById("analyzeButton");
-  btn.disabled = true;
-  btn.innerHTML = '<span class="loading"><span class="spinner"></span>Analyzing...</span>';
-  showLoading();
-  try{
-    const res = await fetch(`${API_BASE_URL}/analyze`,{
-      method:"POST",
-      headers:{"Content-Type":"application/json"},
-      body:JSON.stringify({message: message, provider: document.getElementById("providerSelect").value})
-    });
-    const txt = await res.text();
-    if(!res.ok) throw new Error(`API ${res.status}: ${txt}`);
-    renderResult(JSON.parse(txt));
-  }catch(err){showError(err.message)}
-  finally{btn.disabled=false;btn.innerText="Analyze Threat"}
-}
-
-async function analyzeScreenshot(){
-  if(!selectedFile){alert("Please select a screenshot first.");return}
-  const btn = document.getElementById("analyzeScreenshotButton");
-  btn.disabled = true;
-  btn.innerHTML = '<span class="loading"><span class="spinner"></span>Analyzing...</span>';
-  showLoading();
-  try{
-    const fd = new FormData();
-    fd.append("file", selectedFile);
-    fd.append("provider", document.getElementById("providerSelect").value);
-    const res = await fetch(`${API_BASE_URL}/analyze-screenshot`,{method:"POST",body:fd});
-    const txt = await res.text();
-    if(!res.ok) throw new Error(`API ${res.status}: ${txt}`);
-    renderResult(JSON.parse(txt));
-  }catch(err){showError(err.message)}
-  finally{btn.disabled=false;btn.innerText="Analyze Screenshot"}
-}
-
-async function analyzeApk(){
-  if(!selectedApk){alert("Please select an APK file first.");return}
-  const btn = document.getElementById("analyzeApkButton");
-  btn.disabled = true;
-  btn.innerHTML = '<span class="loading"><span class="spinner"></span>Analyzing...</span>';
-  showLoading();
-  try{
-    const fd = new FormData();
-    fd.append("file", selectedApk);
-    const res = await fetch(`${API_BASE_URL}/analyze-apk`,{method:"POST",body:fd});
-    const txt = await res.text();
-    if(!res.ok) throw new Error(`API ${res.status}: ${txt}`);
-    renderResult(JSON.parse(txt));
-  }catch(err){showError(err.message)}
-  finally{btn.disabled=false;btn.innerText="Analyze APK"}
-}
-
-function showLoading(){
-  document.getElementById("emptyState").style.display = "none";
-  document.getElementById("result").style.display = "block";
-  document.getElementById("risk").innerText = "Analyzing";
-  document.getElementById("summary").innerText = "AI Guardian is analyzing...";
-  document.getElementById("extraMeta").innerHTML = "";
-  document.getElementById("indicators").innerHTML = "";
-  document.getElementById("actions").innerHTML = "";
-}
-
-function showError(msg){
-  document.getElementById("risk").innerText = "Analysis Failed";
-  document.getElementById("score").innerText = "0";
-  document.getElementById("category").innerText = "Connection Error";
-  document.getElementById("summary").innerText = `Unable to connect to backend. ${msg}`;
-  document.getElementById("indicators").innerHTML = "";
-  document.getElementById("actions").innerHTML = "";
-  document.getElementById("extraMeta").innerHTML = "";
-}
-
-function renderResult(data){
-  const risk = (data.risk_level || "UNKNOWN").toUpperCase();
-  const score = Number(data.risk_score || 0);
-  document.getElementById("risk").innerText = risk;
-  document.getElementById("score").innerText = score;
-  document.getElementById("category").innerText = formatCategory(data.category);
-  document.getElementById("summary").innerText = data.summary || "";
-
-  const progress = document.getElementById("progressBar");
-  progress.style.width = Math.min(score,100) + "%";
-  const riskColor = getRiskColor(risk);
-  const riskEl = document.getElementById("risk");
-  riskEl.style.color = riskColor;
-  progress.style.background = riskColor;
-  document.querySelector(".risk-head").style.setProperty("--risk-color", riskColor);
-  document.getElementById("category").style.setProperty("--risk-color", riskColor);
-  const rp = document.getElementById("resultPanel");
-  rp.style.setProperty("--risk-color", riskColor);
-  rp.classList.add("has-risk");
-  if(risk === "HIGH" || risk === "CRITICAL") riskEl.classList.add("high-risk-spark");
-  else riskEl.classList.remove("high-risk-spark");
-
-  renderExtraMeta(data);
-
-  const indicators = document.getElementById("indicators");
-  indicators.innerHTML = "";
-  (data.indicators || []).forEach(item=>{
-    const div = document.createElement("div");
-    div.className = "indicator";
-    const src = item.source ? ` <span style="color:#60758c;font-size:10px">[${escapeHtml(item.source)}]</span>` : "";
-    div.innerHTML = `<div class="itype">${escapeHtml(item.type || "Indicator")}${src}</div><div class="idesc">${escapeHtml(item.description || "")}</div>`;
-    indicators.appendChild(div);
-  });
-
-  const actions = document.getElementById("actions");
-  actions.innerHTML = "";
-  (data.recommended_actions || []).forEach(action=>{
-    const div = document.createElement("div");
-    div.className = "action";
-    div.innerHTML = `<span class="check">✓</span><span>${escapeHtml(action)}</span>`;
-    actions.appendChild(div);
-  });
-
-  if(data.provider_used){
-    const p = document.createElement("div");
-    p.style.cssText = "font-size:10px;color:#60758c;margin-top:-14px;margin-bottom:14px;letter-spacing:.5px";
-    p.innerText = `Analyzed via: ${data.provider_used.toUpperCase()}`;
-    document.getElementById("summary").after(p);
-  }
-}
-
-function renderExtraMeta(data){
-  const container = document.getElementById("extraMeta");
-  let html = "";
-
-  // Screenshot metadata
-  if(data.screenshot_analysis){
-    const meta = data.screenshot_analysis;
-    html += '<div class="meta-section"><div class="heading">Screenshot Analysis</div>';
-    if(meta.extracted_text){
-      html += `<div style="font-size:11px;color:#60758c;margin-bottom:6px">Extracted Text (OCR):</div><div class="meta-box">${escapeHtml(meta.extracted_text)}</div>`;
-    } else {
-      html += `<div style="font-size:11px;color:#60758c">No text detected via OCR.</div>`;
+      info.style.display = "block";
+      document.getElementById("analyzeApkButton").disabled = false;
     }
-    if(meta.qr_codes && meta.qr_codes.length){
-      html += `<div style="font-size:11px;color:#60758c;margin-top:12px;margin-bottom:6px">QR Codes Detected:</div>`;
-      meta.qr_codes.forEach(qr=>{
-        html += `<div class="qr-item">📱 ${escapeHtml(qr)}</div>`;
+
+    async function analyzeMessage() {
+      const message = document.getElementById("message").value.trim();
+      if (!message) { alert("Please enter a message for analysis."); return }
+      const btn = document.getElementById("analyzeButton");
+      btn.disabled = true;
+      btn.innerHTML = `<span class="loading"><span class="spinner"></span>${t("analyzing")}</span>`;
+      showLoading();
+      try {
+        const res = await fetch(`${API_BASE_URL}/analyze`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ message: message, provider: document.getElementById("providerSelect").value, lang: currentLang })
+        });
+        const txt = await res.text();
+        if (!res.ok) throw new Error(`API ${res.status}: ${txt}`);
+        renderResult(JSON.parse(txt));
+      } catch (err) { showError(err.message) }
+      finally { btn.disabled = false; btn.innerText = t("btnAnalyzeThreat") }
+    }
+
+    async function analyzeScreenshot() {
+      if (!selectedFile) { alert("Please select a screenshot first."); return }
+      const btn = document.getElementById("analyzeScreenshotButton");
+      btn.disabled = true;
+      btn.innerHTML = `<span class="loading"><span class="spinner"></span>${t("analyzing")}</span>`;
+      showLoading();
+      try {
+        const fd = new FormData();
+        fd.append("file", selectedFile);
+        fd.append("provider", document.getElementById("providerSelect").value);
+        fd.append("lang", currentLang);
+        const res = await fetch(`${API_BASE_URL}/analyze-screenshot`, { method: "POST", body: fd });
+        const txt = await res.text();
+        if (!res.ok) throw new Error(`API ${res.status}: ${txt}`);
+        renderResult(JSON.parse(txt));
+      } catch (err) { showError(err.message) }
+      finally { btn.disabled = false; btn.innerText = t("btnAnalyzeShot") }
+    }
+
+    async function analyzeApk() {
+      if (!selectedApk) { alert("Please select an APK file first."); return }
+      const btn = document.getElementById("analyzeApkButton");
+      btn.disabled = true;
+      btn.innerHTML = `<span class="loading"><span class="spinner"></span>${t("analyzing")}</span>`;
+      showLoading();
+      try {
+        const fd = new FormData();
+        fd.append("file", selectedApk);
+        fd.append("lang", currentLang);
+        const res = await fetch(`${API_BASE_URL}/analyze-apk`, { method: "POST", body: fd });
+        const txt = await res.text();
+        if (!res.ok) throw new Error(`API ${res.status}: ${txt}`);
+        renderResult(JSON.parse(txt));
+      } catch (err) { showError(err.message) }
+      finally { btn.disabled = false; btn.innerText = t("btnAnalyzeApk") }
+    }
+
+    function showLoading() {
+      document.getElementById("emptyState").style.display = "none";
+      document.getElementById("result").style.display = "block";
+      document.getElementById("risk").innerText = t("analyzingStatus");
+      document.getElementById("summary").innerText = t("analyzingMsg");
+      document.getElementById("extraMeta").innerHTML = "";
+      document.getElementById("indicators").innerHTML = "";
+      document.getElementById("actions").innerHTML = "";
+    }
+
+    function showError(msg) {
+      document.getElementById("risk").innerText = t("failStatus");
+      document.getElementById("score").innerText = "0";
+      document.getElementById("category").innerText = t("failCategory");
+      document.getElementById("summary").innerText = `${t("failMsg")} ${msg}`;
+      document.getElementById("indicators").innerHTML = "";
+      document.getElementById("actions").innerHTML = "";
+      document.getElementById("extraMeta").innerHTML = "";
+    }
+
+    function renderResult(data) {
+      const risk = (data.risk_level || "UNKNOWN").toUpperCase();
+      const score = Number(data.risk_score || 0);
+      document.getElementById("risk").innerText = risk;
+      document.getElementById("score").innerText = score;
+      document.getElementById("category").innerText = formatCategory(data.category);
+      document.getElementById("summary").innerText = data.summary || "";
+
+      const progress = document.getElementById("progressBar");
+      progress.style.width = Math.min(score, 100) + "%";
+      const riskColor = getRiskColor(risk);
+      const riskEl = document.getElementById("risk");
+      riskEl.style.color = riskColor;
+      progress.style.background = riskColor;
+      document.querySelector(".risk-head").style.setProperty("--risk-color", riskColor);
+      document.getElementById("category").style.setProperty("--risk-color", riskColor);
+      const rp = document.getElementById("resultPanel");
+      rp.style.setProperty("--risk-color", riskColor);
+      rp.classList.add("has-risk");
+      if (risk === "HIGH" || risk === "CRITICAL") riskEl.classList.add("high-risk-spark");
+      else riskEl.classList.remove("high-risk-spark");
+
+      renderExtraMeta(data);
+
+      const indicators = document.getElementById("indicators");
+      indicators.innerHTML = "";
+      (data.indicators || []).forEach(item => {
+        const div = document.createElement("div");
+        div.className = "indicator";
+        const src = item.source ? ` <span style="color:#60758c;font-size:10px">[${escapeHtml(item.source)}]</span>` : "";
+        div.innerHTML = `<div class="itype">${escapeHtml(item.type || "Indicator")}${src}</div><div class="idesc">${escapeHtml(item.description || "")}</div>`;
+        indicators.appendChild(div);
       });
-    }
-    html += '</div>';
-  }
 
-  // APK metadata
-  if(data.package_name !== undefined && data.permissions_count !== undefined){
-    html += '<div class="meta-section"><div class="heading">APK Metadata</div>';
-    html += `<div class="kv"><span class="kv-label">Package Name</span><span class="kv-value">${escapeHtml(data.package_name || "—")}</span></div>`;
-    html += `<div class="kv"><span class="kv-label">App Name</span><span class="kv-value">${escapeHtml(data.app_name || "—")}</span></div>`;
-    html += `<div class="kv"><span class="kv-label">Total Permissions</span><span class="kv-value">${data.permissions_count}</span></div>`;
-    html += `<div class="kv"><span class="kv-label">Dangerous Permissions</span><span class="kv-value">${(data.dangerous_permissions || []).length}</span></div>`;
-
-    if(data.dangerous_permissions && data.dangerous_permissions.length){
-      html += '<div style="font-size:11px;color:#60758c;margin-top:14px;margin-bottom:6px">Dangerous Permissions Detected:</div>';
-      html += '<div class="perm-list">';
-      data.dangerous_permissions.forEach(p=>{
-        const short = p.replace("android.permission.","");
-        html += `<span class="perm-tag">${escapeHtml(short)}</span>`;
+      const actions = document.getElementById("actions");
+      actions.innerHTML = "";
+      (data.recommended_actions || []).forEach(action => {
+        const div = document.createElement("div");
+        div.className = "action";
+        div.innerHTML = `<span class="check">✓</span><span>${escapeHtml(action)}</span>`;
+        actions.appendChild(div);
       });
-      html += '</div>';
+
+      if (data.provider_used) {
+        const p = document.createElement("div");
+        p.style.cssText = "font-size:10px;color:#60758c;margin-top:-14px;margin-bottom:14px;letter-spacing:.5px";
+        p.innerText = `Analyzed via: ${data.provider_used.toUpperCase()}`;
+        document.getElementById("summary").after(p);
+      }
     }
-    html += '</div>';
-  }
 
-  container.innerHTML = html;
-}
+    function renderExtraMeta(data) {
+      const container = document.getElementById("extraMeta");
+      let html = "";
 
-function getRiskColor(risk){
-  if(risk === "CRITICAL") return "#ef4444";
-  if(risk === "HIGH") return "#f97316";
-  if(risk === "MEDIUM") return "#f59e0b";
-  if(risk === "LOW") return "#22c55e";
-  return "#38bdf8";
-}
-
-function formatCategory(c){
-  if(!c) return "Unclassified";
-  return String(c).replaceAll("_"," ").replace(/\b\w/g,x=>x.toUpperCase());
-}
-
-function escapeHtml(v){
-  return String(v).replaceAll("&","&amp;").replaceAll("<","&lt;").replaceAll(">","&gt;").replaceAll('"',"&quot;").replaceAll("'","&#039;");
-}
-
-async function loadProviders() {
-  try {
-    const res = await fetch("/api/providers");
-    const data = await res.json();
-    const select = document.getElementById("providerSelect");
-    const hint = document.getElementById("providerHint");
-
-    data.providers.forEach(p => {
-      const option = select.querySelector(`option[value="${p.id}"]`);
-      if (!option) return;
-
-      if (p.available) {
-        option.disabled = false;
-      } else {
-        option.disabled = true;
+      if (data.screenshot_analysis) {
+        const meta = data.screenshot_analysis;
+        html += `<div class="meta-section"><div class="heading">${t("screenshotAnalysisHeading")}</div>`;
+        if (meta.extracted_text) {
+          html += `<div style="font-size:11px;color:#60758c;margin-bottom:6px">${t("extractedTextHeading")}</div><div class="meta-box">${escapeHtml(meta.extracted_text)}</div>`;
+        } else {
+          html += `<div style="font-size:11px;color:#60758c">${t("noTextDetected")}</div>`;
+        }
+        if (meta.qr_codes && meta.qr_codes.length) {
+          html += `<div style="font-size:11px;color:#60758c;margin-top:12px;margin-bottom:6px">${t("qrCodesDetected")}</div>`;
+          meta.qr_codes.forEach(qr => {
+            html += `<div class="qr-item">📱 ${escapeHtml(qr)}</div>`;
+          });
+        }
+        html += '</div>';
       }
-    });
 
-    select.addEventListener("change", () => {
-      const mode = select.value;
-      if (mode === "local") {
-        hint.innerText = "All analysis runs locally. Your data never leaves this device.";
-        hint.style.color = "#60758c";
-      } else {
-        hint.innerText = `⚠ Cloud mode: message text will be sent to ${mode.toUpperCase()}'s API.`;
-        hint.style.color = "#f59e0b";
+      if (data.package_name !== undefined && data.permissions_count !== undefined) {
+        html += `<div class="meta-section"><div class="heading">APK Metadata</div>`;
+        html += `<div class="kv"><span class="kv-label">${t("packageNameLabel")}</span><span class="kv-value">${escapeHtml(data.package_name || "—")}</span></div>`;
+        html += `<div class="kv"><span class="kv-label">${t("appNameLabel")}</span><span class="kv-value">${escapeHtml(data.app_name || "—")}</span></div>`;
+        html += `<div class="kv"><span class="kv-label">${t("totalPermissionsLabel")}</span><span class="kv-value">${data.permissions_count}</span></div>`;
+        html += `<div class="kv"><span class="kv-label">${t("dangerousPermissionsLabel")}</span><span class="kv-value">${(data.dangerous_permissions || []).length}</span></div>`;
+
+        if (data.dangerous_permissions && data.dangerous_permissions.length) {
+          html += `<div style="font-size:11px;color:#60758c;margin-top:14px;margin-bottom:6px">${t("dangerousPermissionsDetected")}:</div>`;
+          html += '<div class="perm-list">';
+          data.dangerous_permissions.forEach(p => {
+            const short = p.replace("android.permission.", "");
+            html += `<span class="perm-tag">${escapeHtml(short)}</span>`;
+          });
+          html += '</div>';
+        }
+        html += '</div>';
       }
-    });
-  } catch (e) {
-    console.error("Failed to load providers:", e);
-  }
-}
 
-loadProviders();
-</script>
+      container.innerHTML = html;
+    }
+
+    function getRiskColor(risk) {
+      if (risk === "CRITICAL") return "#ef4444";
+      if (risk === "HIGH") return "#f97316";
+      if (risk === "MEDIUM") return "#f59e0b";
+      if (risk === "LOW") return "#22c55e";
+      return "#38bdf8";
+    }
+
+    function formatCategory(c) {
+      if (!c) return t("unclassified");
+      return String(c).replaceAll("_", " ").replace(/\b\w/g, x => x.toUpperCase());
+    }
+
+    function escapeHtml(v) {
+      return String(v).replaceAll("&", "&amp;").replaceAll("<", "&lt;").replaceAll(">", "&gt;").replaceAll('"', "&quot;").replaceAll("'", "&#039;");
+    }
+
+    async function loadProviders() {
+      try {
+        const res = await fetch("/api/providers");
+        const data = await res.json();
+        const select = document.getElementById("providerSelect");
+        const hint = document.getElementById("providerHint");
+
+        data.providers.forEach(p => {
+          const option = select.querySelector(`option[value="${p.id}"]`);
+          if (!option) return;
+
+          if (p.available) {
+            option.disabled = false;
+          } else {
+            option.disabled = true;
+          }
+        });
+
+        select.addEventListener("change", () => {
+          const mode = select.value;
+          if (mode === "local") {
+            hint.innerText = t("engineHintLocal");
+            hint.style.color = "#60758c";
+          } else {
+            hint.innerText = t("engineHintCloud").replace("{provider}", mode.toUpperCase());
+            hint.style.color = "#f59e0b";
+          }
+        });
+      } catch (e) {
+        console.error("Failed to load providers:", e);
+      }
+    }
+
+    setLang(currentLang);
+    loadProviders();
+  </script>
 </body>
 </html>

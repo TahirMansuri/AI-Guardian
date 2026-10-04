@@ -5,6 +5,7 @@ from typing import List, Optional
 class ScamRequest(BaseModel):
     message: str
     provider: Optional[str] = "local"
+    lang: Optional[str] = "en"
 
 
 class Indicator(BaseModel):
