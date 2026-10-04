@@ -36,37 +36,53 @@ A practical, research-oriented prototype for detecting digital scams, phishing, 
 
 ## 🏗️ Architecture
 
-```text
-        Text Input              Screenshot Input
-             |                        |
-             |                        v
-             |               OCR (Tesseract) + QR Decoder (pyzbar)
-             |                        |
-             +------------+-----------+
-                          |
-                          v
-                    AI Guardian Engine
-                          |
-        +-----------------+-----------------+
-        |                 |                 |
-        v                 v                 v
-  Semantic AI      Deterministic       URL Intelligence
-(Multi-Provider)   Scam Rules        (WHOIS, Format,
- Local or Cloud     (Regex)            HTTPS, Punycode)
-        |                 |                 |
-        +-----------------+-----------------+
-                          |
-                          v
-                  Risk Aggregation Layer
-                          |
-                          v
-              Explainable Threat Assessment
-                          |
-        +-----------------+-----------------+
-        |                 |                 |
-        v                 v                 v
-  Risk Level        Detected            Recommended
-  & Score           Indicators          Actions
+```mermaid
+graph TD
+    %% Inputs
+    T[📝 Text Input]
+    S[📸 Screenshot Input]
+    A[📦 APK Input]
+
+    %% Processors
+    OCR[🔍 OCR & QR Decoder <br> <i>Tesseract + pyzbar</i>]
+    APK_Analyzer[🛡️ Static APK Analysis <br> <i>Androguard</i>]
+
+    S --> OCR
+    A --> APK_Analyzer
+
+    %% Main Engine
+    T --> Engine{⚙️ AI Guardian Engine}
+    OCR --> Engine
+    APK_Analyzer --> Engine
+
+    %% Analysis Branches
+    Engine --> AI[🧠 Semantic AI <br> <i>Local/Cloud LLMs</i>]
+    Engine --> Rules[📏 Scam Rules <br> <i>Deterministic Regex</i>]
+    Engine --> URL[🌐 URL Intelligence <br> <i>WHOIS, Format, HTTPS</i>]
+
+    %% Aggregation
+    AI --> Agg[📊 Risk Aggregation Layer]
+    Rules --> Agg
+    URL --> Agg
+
+    %% Output
+    Agg --> Result[🚨 Explainable Threat Assessment]
+
+    Result --> RL[🔴 Risk Level & Score]
+    Result --> Ind[🔎 Detected Indicators]
+    Result --> Rec[💡 Recommended Actions]
+
+    classDef input fill:#e1f5fe,stroke:#03a9f4,stroke-width:2px,color:#000
+    classDef process fill:#f3e5f5,stroke:#9c27b0,stroke-width:2px,color:#000
+    classDef engine fill:#fff3e0,stroke:#ff9800,stroke-width:2px,color:#000
+    classDef branch fill:#e8f5e9,stroke:#4caf50,stroke-width:2px,color:#000
+    classDef output fill:#ffebee,stroke:#f44336,stroke-width:2px,color:#000
+
+    class T,S,A input
+    class OCR,APK_Analyzer process
+    class Engine engine
+    class AI,Rules,URL branch
+    class Result,RL,Ind,Rec output
 ```
 
 ---
@@ -114,22 +130,22 @@ uvicorn main:app --reload --host 127.0.0.1 --port 8000
 
 ```text
 AI-Guardian/
-├── backend/
-│   ├── main.py              # FastAPI Application (Serves API & Frontend)
-│   ├── risk_engine.py       # Core risk aggregation logic
-│   ├── schemas.py           # Pydantic schemas for request/response validation
-│   ├── .env                 # API Keys for Cloud Providers
-│   ├── requirements.txt     # Python dependencies for the backend
-│   ├── llm_providers/       # Abstracted multi-provider routing (Local, Gemini, OpenAI) & fallback
-│   └── security/            # Security Intelligence Layer
-│       ├── __init__.py
-│       ├── scam_rules.py    # Deterministic Scam Rule Engine
-│       ├── url_analyzer.py  # URL Intelligence
-│       ├── apk_analyzer.py  # Static APK metadata analysis (Androguard)
-│       └── screenshot_analyzer.py # OCR and QR Extraction
-├── frontend/
-│   └── index.html           # Unified UI for text, screenshot, and APK testing
-└── README.md                # Project documentation
+├── ⚙️ backend/
+│   ├── 🚀 main.py              # FastAPI Application (Serves API & Frontend)
+│   ├── 🧮 risk_engine.py       # Core risk aggregation logic
+│   ├── 📋 schemas.py           # Pydantic schemas for request/response validation
+│   ├── 🔑 .env                 # API Keys for Cloud Providers
+│   ├── 📦 requirements.txt     # Python dependencies for the backend
+│   ├── 🧠 llm_providers/       # Abstracted multi-provider routing (Local, Gemini, OpenAI) & fallback
+│   └── 🛡️ security/            # Security Intelligence Layer
+│       ├── 📄 __init__.py
+│       ├── 📏 scam_rules.py    # Deterministic Scam Rule Engine
+│       ├── 🌐 url_analyzer.py  # URL Intelligence
+│       ├── 📦 apk_analyzer.py  # Static APK metadata analysis (Androguard)
+│       └── 📸 screenshot_analyzer.py # OCR and QR Extraction
+├── 🎨 frontend/
+│   └── 🖥️ index.html           # Unified UI for text, screenshot, and APK testing
+└── 📖 README.md                # Project documentation
 ```
 
 ---
