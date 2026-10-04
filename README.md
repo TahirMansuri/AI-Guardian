@@ -28,6 +28,7 @@ A practical, research-oriented prototype for detecting digital scams, phishing, 
 - **Deterministic Scam Rules:** Evaluates text against 20+ rule-based triggers (urgency, OTP requests, digital arrest, KYC fraud, etc.) and assigns weighted severity scores.
 - **URL Intelligence:** Analyzes suspicious URLs for missing HTTPS, IP-based hosts, URL shorteners, excessive subdomains, punycode, `@`-symbol tricks, suspicious keywords, and **WHOIS-based domain age**.
 - **Screenshot / Image Analysis (Multimodal):** Extracts text from uploaded screenshots via **OCR (Tesseract)** and decodes **QR codes (pyzbar)** — then routes the extracted content through the same security engine.
+- **Static APK Analysis:** Analyzes Android APK files without executing them (using `androguard`) to detect banking trojans, spyware, package impersonation, and dangerous permission combos (like SMS + Accessibility).
 - **Explainable Risk Aggregation:** Calculates a final risk score (0–100) and risk level (LOW, MEDIUM, HIGH, CRITICAL) by combining evidence from AI, URL analysis, and deterministic rules. Every indicator is tagged with its source (`Rule Engine`, `URL Analyzer`, `AI Model`).
 - **100% Privacy Focused:** Everything runs locally without relying on external cloud LLM APIs.
 
@@ -115,19 +116,19 @@ uvicorn main:app --reload --host 127.0.0.1 --port 8000
 AI-Guardian/
 ├── backend/
 │   ├── main.py              # FastAPI Application (Serves API & Frontend)
-│   ├── ollama_client.py     # HTTP Client communicating with llama.cpp
 │   ├── risk_engine.py       # Core risk aggregation logic
 │   ├── schemas.py           # Pydantic schemas for request/response validation
 │   ├── .env                 # API Keys for Cloud Providers
 │   ├── requirements.txt     # Python dependencies for the backend
-│   ├── llm_providers/       # Abstracted multi-provider routing & graceful fallback
+│   ├── llm_providers/       # Abstracted multi-provider routing (Local, Gemini, OpenAI) & fallback
 │   └── security/            # Security Intelligence Layer
 │       ├── __init__.py
 │       ├── scam_rules.py    # Deterministic Scam Rule Engine
 │       ├── url_analyzer.py  # URL Intelligence
+│       ├── apk_analyzer.py  # Static APK metadata analysis (Androguard)
 │       └── screenshot_analyzer.py # OCR and QR Extraction
 ├── frontend/
-│   └── index.html           # Unified UI for text and screenshot testing
+│   └── index.html           # Unified UI for text, screenshot, and APK testing
 └── README.md                # Project documentation
 ```
 
@@ -151,6 +152,12 @@ Upload any of these and confirm the extracted OCR text + QR codes appear alongsi
 - Screenshot containing a QR code (UPI payment request) → decoded QR runs through URL analyzer
 - Screenshot of a legitimate bank SMS → **LOW/MEDIUM**
 - Blank or unreadable image → **LOW**, "No content detected"
+
+### APK Analysis Tab
+Upload any `.apk` file to perform static metadata analysis:
+- **Banking Trojan Signatures:** Detects apps asking for SMS and Accessibility services together.
+- **Package Impersonation:** Identifies apps trying to mimic official bank packages.
+- **Excessive Permissions:** Flags apps that request far more permissions than a normal application.
 
 ---
 
