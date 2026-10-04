@@ -1290,3 +1290,21 @@ Also determine:
 7. How to avoid breaking the existing `main.py`, `ollama_client.py`, llama.cpp integration, and frontend.
 
 Please solve the **current integration problem first** rather than redesigning the complete project.
+
+# 20. Stage 3 — Advanced Features (Oct 4, 2026)
+
+## Multi-Provider Architecture
+Introduced `backend/llm_providers/` separating `local_provider.py`, `gemini_provider.py`, and `openai_provider.py`. The `router.py` automatically falls back to local models if cloud providers fail or if API keys are missing.
+
+## APK Static Metadata Analysis
+Created `backend/security/apk_analyzer.py` utilizing the `androguard` library to statically analyze Android `.apk` files without execution.
+Features:
+- Dangerous permission combos (SMS + Accessibility) indicative of banking trojans.
+- Excessive permission flagging.
+- Fake banking app package impersonation detection.
+
+## Documentation & Assets Organization
+- Added a `WINDOWS_SETUP.md` file for comprehensive local setup instructions on Windows.
+- Transformed the `README.md` architecture diagram from text art to a professional `mermaid` diagram and included emojis in the structure tree.
+- Re-organized all testing assets (screenshots, APKs, text payloads) into a `test_fixtures/` directory for a cleaner root environment.
+- Corrected discrepancies in `requirements.txt` to include all runtime dependencies across platforms.

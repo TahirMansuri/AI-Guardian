@@ -13,19 +13,24 @@
   - Refactored `risk_engine.py` to aggregate indicators from the Rule Engine, AI, and URL Analyzer into a final capped risk score.
   - **Architecture Refactoring:** Unified the frontend and backend. FastAPI now serves the `frontend/` directory statically on the root `/` endpoint, meaning we only need a single server (`uvicorn`) and a single Cloudflare Tunnel to expose the entire app online.
   - **UI/UX Enhancements:** Updated `index.html` to include dynamic glowing CSS variables that adapt to the risk score color (Red/Orange/Yellow/Green), improved mobile responsiveness using media queries, and placed Developer Credits prominently in the header and footer.
+  - **Multi-Provider LLM Integration:** Added `llm_providers/` for fallback support between Local, Gemini, and OpenAI.
+  - **APK Analysis:** Integrated static APK metadata parsing via `androguard` in `apk_analyzer.py`.
+  - **Project Organization:** Consolidated tests into `test_fixtures/` and added a complete `WINDOWS_SETUP.md`.
 - **Pending Tasks:**
   - Continuous refinement of UI and testing with more edge-case scam messages.
-  - Future AI optimization.
 
 ## File Structure (Security Module)
 ```
 backend/
 ├── main.py (Serves static frontend + API routes)
 ├── risk_engine.py
+├── llm_providers/ (Base, router, and provider specific logic)
 └── security/
     ├── __init__.py (empty)
     ├── scam_rules.py (contains `RULES` and `detect_scam_indicators`)
-    └── url_analyzer.py (contains URL intelligence and WHOIS logic)
+    ├── url_analyzer.py (contains URL intelligence and WHOIS logic)
+    ├── apk_analyzer.py (static APK metadata analysis)
+    └── screenshot_analyzer.py (OCR and QR decoding)
 ```
 
 **Note to other AI Assistants:** Please use this context to seamlessly continue assisting with the `AI-Guardian` project. The architecture now relies on a single unified backend process serving a relative-path frontend.

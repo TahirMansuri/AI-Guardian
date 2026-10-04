@@ -54,3 +54,13 @@
 - Created new branch `feature/screenshot-scan`.
 - Committed changes related to screenshot scan threat detection (`backend/security/screenshot_analyzer.py` and other files).
 - Pushed the new branch to GitHub.
+
+### Date: 2026-10-04
+**Action:** Multi-Provider LLM, APK Static Analysis, Documentation & Organization
+**Changes made:**
+- Created `backend/llm_providers/` module to handle dynamic routing between Local (`llama.cpp`), Gemini, and OpenAI models with graceful fallback.
+- Added `backend/security/apk_analyzer.py` utilizing `androguard` to statically analyze APK files for dangerous permission combinations and package impersonation.
+- Upgraded `README.md` with a dynamic `mermaid` architecture diagram and emojis.
+- Added a `WINDOWS_SETUP.md` comprehensive guide and linked it in the README.
+- Reorganized project test assets (APKs, images, text payloads) into a new `test_fixtures/` folder.
+- Cleaned up dependency mismatches between root and backend `requirements.txt`.
