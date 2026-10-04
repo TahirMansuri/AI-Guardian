@@ -1,0 +1,18 @@
+# AI Guardian - Text Analysis Test Samples
+
+You can use the following text messages to test the AI Guardian text analysis capabilities.
+
+## 1. Phishing / Account Blocked (CRITICAL)
+Your SBI account will be blocked today. Complete KYC immediately at http://sbi-kyc-verify.com
+
+## 2. Job Scam (HIGH)
+Congratulations! You have been selected for a work from home job. Pay ₹2,999 registration fee to activate your employment immediately.
+
+## 3. UPI Refund Scam (HIGH)
+Your UPI refund is pending. Scan this QR code and enter your UPI PIN to receive your refund immediately.
+
+## 4. Digital Arrest / Law Enforcement Impersonation (CRITICAL)
+CBI NOTICE: Your Aadhaar has been linked to illegal transactions. Stay on a video call and transfer ₹50,000 immediately to avoid arrest.
+
+## 5. Legitimate / Benign Message (LOW)
+Your college has scheduled the internal examination for Monday at 10 AM. Please bring your identity card.
