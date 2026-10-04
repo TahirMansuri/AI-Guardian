@@ -8,3 +8,7 @@ pytesseract
 pillow
 pyzbar
 opencv-python-headless
+openai
+google-generativeai
+python-dotenv
+androguard

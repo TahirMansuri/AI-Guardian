@@ -21,7 +21,7 @@ body{min-height:100vh;background:radial-gradient(circle at 15% 10%,rgba(56,189,2
 .hero h2{font-size:clamp(30px,4vw,46px);line-height:1.08;letter-spacing:-1.5px;margin-bottom:12px}
 .hero h2 span{color:var(--blue)}
 .hero p{max-width:760px;color:var(--muted);font-size:15px;line-height:1.7}
-.tabs{display:flex;gap:8px;margin-bottom:16px}
+.tabs{display:flex;gap:8px;margin-bottom:16px;flex-wrap:wrap}
 .tab{padding:9px 16px;border-radius:8px;border:1px solid var(--border);background:rgba(255,255,255,.02);color:var(--muted);font-size:12px;font-weight:600;cursor:pointer}
 .tab.active{background:linear-gradient(135deg,#0ea5e9,#14b8a6);color:#fff;border-color:transparent}
 .grid{display:grid;grid-template-columns:minmax(0,1.05fr) minmax(0,.95fr);gap:22px;align-items:start}
@@ -42,6 +42,7 @@ textarea:focus{border-color:rgba(56,189,248,.65);box-shadow:0 0 0 3px rgba(56,18
 .dropzone-hint{color:var(--dim);font-size:11px}
 .preview{margin-top:14px;display:none}
 .preview img{max-width:100%;max-height:250px;border-radius:8px;border:1px solid var(--border)}
+.file-info{background:rgba(56,189,248,.05);border:1px solid rgba(56,189,248,.15);border-radius:8px;padding:12px;margin-top:14px;font-size:12px;color:var(--muted)}
 .footer-row{display:flex;align-items:center;justify-content:space-between;margin-top:12px}
 .hint{color:var(--dim);font-size:11px}
 .button{border:0;border-radius:9px;padding:12px 19px;background:linear-gradient(135deg,#0ea5e9,#14b8a6);color:#fff;font-size:13px;font-weight:700;cursor:pointer}
@@ -72,6 +73,12 @@ textarea:focus{border-color:rgba(56,189,248,.65);box-shadow:0 0 0 3px rgba(56,18
 .meta-section{margin-top:22px;padding-top:20px;border-top:1px solid var(--border)}
 .meta-box{background:rgba(56,189,248,.04);border:1px solid rgba(56,189,248,.15);border-radius:9px;padding:12px 14px;font-size:12px;color:var(--muted);line-height:1.6;white-space:pre-wrap;word-break:break-word;max-height:150px;overflow-y:auto}
 .qr-item{background:rgba(45,212,191,.05);border:1px solid rgba(45,212,191,.2);border-radius:8px;padding:10px 12px;font-size:12px;color:#a7f3d0;margin-bottom:8px;word-break:break-all;font-family:monospace}
+.perm-list{display:flex;flex-wrap:wrap;gap:6px;margin-top:10px}
+.perm-tag{background:rgba(239,68,68,.08);border:1px solid rgba(239,68,68,.25);color:#fca5a5;padding:4px 9px;border-radius:6px;font-size:11px;font-family:monospace}
+.perm-tag.safe{background:rgba(34,197,94,.05);border-color:rgba(34,197,94,.2);color:#a7f3d0}
+.kv{display:flex;justify-content:space-between;padding:6px 0;font-size:12px;border-bottom:1px solid rgba(255,255,255,.04)}
+.kv-label{color:var(--dim)}
+.kv-value{color:var(--text);font-family:monospace}
 .footer{margin-top:30px;display:flex;align-items:center;justify-content:space-between;padding:15px 2px;color:var(--dim);font-size:10px}
 .developer{margin-top:6px;font-size:13px;font-weight:700;color:var(--blue);text-shadow:0 0 8px rgba(56,189,248,.6),0 0 16px rgba(56,189,248,.4);animation:nameGlow 2s ease-in-out infinite}
 @keyframes nameGlow{0%,100%{text-shadow:0 0 8px rgba(56,189,248,.6),0 0 16px rgba(56,189,248,.4)}50%{text-shadow:0 0 15px rgba(56,189,248,1),0 0 30px rgba(56,189,248,.8),0 0 45px #fff}}
@@ -92,7 +99,7 @@ textarea:focus{border-color:rgba(56,189,248,.65);box-shadow:0 0 0 3px rgba(56,18
 <div class="brand-text"><h1>AI Guardian</h1><span>Digital Threat Intelligence</span></div>
 </div>
 <div style="display:flex;align-items:center;gap:20px">
-<div style="font-size:14px;white-space:nowrap">👨‍💻 Developed by - Asst. Prof. Tahir Mansuri</div>
+<div style="font-size:14px;white-space:nowrap">👨💻 Developed by - Asst. Prof. Tahir Mansuri</div>
 <div class="status"><span class="dot"></span><span>LOCAL AI • ONLINE</span></div>
 </div>
 </header>
@@ -101,7 +108,7 @@ textarea:focus{border-color:rgba(56,189,248,.65);box-shadow:0 0 0 3px rgba(56,18
 <section class="hero">
 <div class="hero-label"><span>●</span> AI-Powered Digital Safety</div>
 <h2>Detect threats before <span>they become victims.</span></h2>
-<p>Analyze suspicious messages and screenshots using local AI. AI Guardian identifies potential scam indicators, explains the risk and recommends safer actions — without sending your data to the cloud.</p>
+<p>Analyze suspicious messages, screenshots and APK files using local AI. AI Guardian identifies scam indicators, explains the risk and recommends safer actions — without sending your data to the cloud.</p>
 </section>
 
 <section class="grid">
@@ -117,8 +124,8 @@ textarea:focus{border-color:rgba(56,189,248,.65);box-shadow:0 0 0 3px rgba(56,18
   </label>
   <select id="providerSelect" style="width:100%;padding:10px 12px;border-radius:8px;background:#081522;color:#f4f7fb;border:1px solid #25405d;font-size:13px;outline:none">
     <option value="local">🖥️ Local Qwen2.5-7B (Offline · Private)</option>
-    <option value="openai" disabled>☁️ OpenAI GPT-4o-mini (Cloud · Requires API Key)</option>
-    <option value="gemini" disabled>☁️ Google Gemini 1.5 Flash (Cloud · Requires API Key)</option>
+    <option value="openai" disabled>☁️ OpenAI GPT-4o-mini (Cloud)</option>
+    <option value="gemini" disabled>☁️ Google Gemini (Cloud)</option>
   </select>
   <div id="providerHint" style="font-size:10px;color:#60758c;margin-top:6px">
     All analysis runs locally. Your data never leaves this device.
@@ -127,6 +134,7 @@ textarea:focus{border-color:rgba(56,189,248,.65);box-shadow:0 0 0 3px rgba(56,18
 <div class="tabs">
 <div class="tab active" data-mode="text" onclick="switchMode('text')">📝 Text</div>
 <div class="tab" data-mode="screenshot" onclick="switchMode('screenshot')">🖼️ Screenshot</div>
+<div class="tab" data-mode="apk" onclick="switchMode('apk')">📦 APK</div>
 </div>
 
 <div id="textMode">
@@ -156,6 +164,20 @@ textarea:focus{border-color:rgba(56,189,248,.65);box-shadow:0 0 0 3px rgba(56,18
 <button id="analyzeScreenshotButton" class="button" onclick="analyzeScreenshot()" disabled>Analyze Screenshot</button>
 </div>
 </div>
+
+<div id="apkMode" style="display:none">
+<div class="dropzone" id="apkDropzone" onclick="document.getElementById('apkInput').click()">
+<div class="dropzone-icon">📦</div>
+<div class="dropzone-text">Click to upload or drag & drop an APK file</div>
+<div class="dropzone-hint">.apk • Max 50 MB • Static analysis only (never executed)</div>
+</div>
+<input type="file" id="apkInput" accept=".apk,application/vnd.android.package-archive" style="display:none" onchange="handleApkSelect(event)">
+<div class="file-info" id="apkInfo" style="display:none"></div>
+<div class="footer-row">
+<div class="hint">Metadata analysis runs locally. The APK is not executed.</div>
+<button id="analyzeApkButton" class="button" onclick="analyzeApk()" disabled>Analyze APK</button>
+</div>
+</div>
 </div>
 </div>
 
@@ -169,7 +191,7 @@ textarea:focus{border-color:rgba(56,189,248,.65);box-shadow:0 0 0 3px rgba(56,18
 <div>
 <div class="empty-icon">◇</div>
 <div style="font-size:14px;color:#8ea3b9;margin-bottom:6px">No analysis available</div>
-<div style="font-size:11px">Submit a message or screenshot to begin threat analysis.</div>
+<div style="font-size:11px">Submit a message, screenshot or APK to begin threat analysis.</div>
 </div>
 </div>
 <div id="result" class="result">
@@ -180,7 +202,7 @@ textarea:focus{border-color:rgba(56,189,248,.65);box-shadow:0 0 0 3px rgba(56,18
 <div class="progress"><div id="progressBar" class="bar"></div></div>
 <div id="category" class="category">—</div>
 <div id="summary" class="summary">—</div>
-<div id="screenshotMeta"></div>
+<div id="extraMeta"></div>
 <div><div class="heading">Detected Indicators</div><div id="indicators"></div></div>
 <div class="actions"><div class="heading">Recommended Actions</div><div id="actions"></div></div>
 </div>
@@ -199,6 +221,7 @@ textarea:focus{border-color:rgba(56,189,248,.65);box-shadow:0 0 0 3px rgba(56,18
 const API_BASE_URL = "";
 let currentMode = "text";
 let selectedFile = null;
+let selectedApk = null;
 
 function switchMode(mode){
   currentMode = mode;
@@ -206,7 +229,9 @@ function switchMode(mode){
   document.querySelector(`.tab[data-mode="${mode}"]`).classList.add("active");
   document.getElementById("textMode").style.display = mode === "text" ? "block" : "none";
   document.getElementById("screenshotMode").style.display = mode === "screenshot" ? "block" : "none";
-  document.getElementById("inputTag").innerText = mode === "text" ? "TEXT ANALYSIS" : "SCREENSHOT ANALYSIS";
+  document.getElementById("apkMode").style.display = mode === "apk" ? "block" : "none";
+  const tags = {text:"TEXT ANALYSIS", screenshot:"SCREENSHOT ANALYSIS", apk:"APK ANALYSIS"};
+  document.getElementById("inputTag").innerText = tags[mode];
 }
 
 function loadExample(n){
@@ -222,15 +247,15 @@ function loadExample(n){
 const dropzone = document.getElementById("dropzone");
 ["dragenter","dragover"].forEach(e=>dropzone.addEventListener(e,ev=>{ev.preventDefault();dropzone.classList.add("drag")}));
 ["dragleave","drop"].forEach(e=>dropzone.addEventListener(e,ev=>{ev.preventDefault();dropzone.classList.remove("drag")}));
-dropzone.addEventListener("drop",ev=>{
-  const files = ev.dataTransfer.files;
-  if(files.length) handleFile(files[0]);
-});
+dropzone.addEventListener("drop",ev=>{ev.preventDefault();const f=ev.dataTransfer.files;if(f.length)handleFile(f[0])});
 
-function handleFileSelect(ev){
-  const files = ev.target.files;
-  if(files.length) handleFile(files[0]);
-}
+const apkDropzone = document.getElementById("apkDropzone");
+["dragenter","dragover"].forEach(e=>apkDropzone.addEventListener(e,ev=>{ev.preventDefault();apkDropzone.classList.add("drag")}));
+["dragleave","drop"].forEach(e=>apkDropzone.addEventListener(e,ev=>{ev.preventDefault();apkDropzone.classList.remove("drag")}));
+apkDropzone.addEventListener("drop",ev=>{ev.preventDefault();const f=ev.dataTransfer.files;if(f.length)handleApk(f[0])});
+
+function handleFileSelect(ev){const f=ev.target.files;if(f.length)handleFile(f[0])}
+function handleApkSelect(ev){const f=ev.target.files;if(f.length)handleApk(f[0])}
 
 function handleFile(file){
   if(!file.type.startsWith("image/")){alert("Please select an image file.");return}
@@ -243,6 +268,18 @@ function handleFile(file){
     document.getElementById("analyzeScreenshotButton").disabled = false;
   };
   reader.readAsDataURL(file);
+}
+
+function handleApk(file){
+  if(!file.name.toLowerCase().endsWith(".apk")){alert("Please select an .apk file.");return}
+  if(file.size > 50*1024*1024){alert("File too large. Max 50 MB.");return}
+  selectedApk = file;
+  const sizeMB = (file.size / (1024*1024)).toFixed(2);
+  const info = document.getElementById("apkInfo");
+  info.innerHTML = `<div class="kv"><span class="kv-label">File</span><span class="kv-value">${escapeHtml(file.name)}</span></div>
+                    <div class="kv"><span class="kv-label">Size</span><span class="kv-value">${sizeMB} MB</span></div>`;
+  info.style.display = "block";
+  document.getElementById("analyzeApkButton").disabled = false;
 }
 
 async function analyzeMessage(){
@@ -261,12 +298,8 @@ async function analyzeMessage(){
     const txt = await res.text();
     if(!res.ok) throw new Error(`API ${res.status}: ${txt}`);
     renderResult(JSON.parse(txt));
-  }catch(err){
-    showError(err.message);
-  }finally{
-    btn.disabled = false;
-    btn.innerText = "Analyze Threat";
-  }
+  }catch(err){showError(err.message)}
+  finally{btn.disabled=false;btn.innerText="Analyze Threat"}
 }
 
 async function analyzeScreenshot(){
@@ -283,12 +316,25 @@ async function analyzeScreenshot(){
     const txt = await res.text();
     if(!res.ok) throw new Error(`API ${res.status}: ${txt}`);
     renderResult(JSON.parse(txt));
-  }catch(err){
-    showError(err.message);
-  }finally{
-    btn.disabled = false;
-    btn.innerText = "Analyze Screenshot";
-  }
+  }catch(err){showError(err.message)}
+  finally{btn.disabled=false;btn.innerText="Analyze Screenshot"}
+}
+
+async function analyzeApk(){
+  if(!selectedApk){alert("Please select an APK file first.");return}
+  const btn = document.getElementById("analyzeApkButton");
+  btn.disabled = true;
+  btn.innerHTML = '<span class="loading"><span class="spinner"></span>Analyzing...</span>';
+  showLoading();
+  try{
+    const fd = new FormData();
+    fd.append("file", selectedApk);
+    const res = await fetch(`${API_BASE_URL}/analyze-apk`,{method:"POST",body:fd});
+    const txt = await res.text();
+    if(!res.ok) throw new Error(`API ${res.status}: ${txt}`);
+    renderResult(JSON.parse(txt));
+  }catch(err){showError(err.message)}
+  finally{btn.disabled=false;btn.innerText="Analyze APK"}
 }
 
 function showLoading(){
@@ -296,7 +342,9 @@ function showLoading(){
   document.getElementById("result").style.display = "block";
   document.getElementById("risk").innerText = "Analyzing";
   document.getElementById("summary").innerText = "AI Guardian is analyzing...";
-  document.getElementById("screenshotMeta").innerHTML = "";
+  document.getElementById("extraMeta").innerHTML = "";
+  document.getElementById("indicators").innerHTML = "";
+  document.getElementById("actions").innerHTML = "";
 }
 
 function showError(msg){
@@ -306,7 +354,7 @@ function showError(msg){
   document.getElementById("summary").innerText = `Unable to connect to backend. ${msg}`;
   document.getElementById("indicators").innerHTML = "";
   document.getElementById("actions").innerHTML = "";
-  document.getElementById("screenshotMeta").innerHTML = "";
+  document.getElementById("extraMeta").innerHTML = "";
 }
 
 function renderResult(data){
@@ -316,18 +364,7 @@ function renderResult(data){
   document.getElementById("score").innerText = score;
   document.getElementById("category").innerText = formatCategory(data.category);
   document.getElementById("summary").innerText = data.summary || "";
-  
-  // Remove any previously added provider info
-  const oldProviderP = document.getElementById("providerUsedInfo");
-  if(oldProviderP) oldProviderP.remove();
 
-  if (data.provider_used) {
-    const p = document.createElement("div");
-    p.id = "providerUsedInfo";
-    p.style.cssText = "font-size:10px;color:#60758c;margin-top:-14px;margin-bottom:14px;letter-spacing:.5px";
-    p.innerText = `Analyzed via: ${data.provider_used.toUpperCase()}`;
-    document.getElementById("summary").after(p);
-  }
   const progress = document.getElementById("progressBar");
   progress.style.width = Math.min(score,100) + "%";
   const riskColor = getRiskColor(risk);
@@ -341,6 +378,8 @@ function renderResult(data){
   rp.classList.add("has-risk");
   if(risk === "HIGH" || risk === "CRITICAL") riskEl.classList.add("high-risk-spark");
   else riskEl.classList.remove("high-risk-spark");
+
+  renderExtraMeta(data);
 
   const indicators = document.getElementById("indicators");
   indicators.innerHTML = "";
@@ -361,29 +400,56 @@ function renderResult(data){
     actions.appendChild(div);
   });
 
-  renderScreenshotMeta(data.screenshot_analysis);
+  if(data.provider_used){
+    const p = document.createElement("div");
+    p.style.cssText = "font-size:10px;color:#60758c;margin-top:-14px;margin-bottom:14px;letter-spacing:.5px";
+    p.innerText = `Analyzed via: ${data.provider_used.toUpperCase()}`;
+    document.getElementById("summary").after(p);
+  }
 }
 
-function renderScreenshotMeta(meta){
-  const container = document.getElementById("screenshotMeta");
-  if(!meta){container.innerHTML="";return}
+function renderExtraMeta(data){
+  const container = document.getElementById("extraMeta");
+  let html = "";
 
-  let html = '<div class="meta-section"><div class="heading">Screenshot Analysis</div>';
-
-  if(meta.extracted_text){
-    html += `<div style="font-size:11px;color:#60758c;margin-bottom:6px">Extracted Text (OCR):</div><div class="meta-box">${escapeHtml(meta.extracted_text)}</div>`;
-  } else {
-    html += `<div style="font-size:11px;color:#60758c">No text detected via OCR.</div>`;
+  // Screenshot metadata
+  if(data.screenshot_analysis){
+    const meta = data.screenshot_analysis;
+    html += '<div class="meta-section"><div class="heading">Screenshot Analysis</div>';
+    if(meta.extracted_text){
+      html += `<div style="font-size:11px;color:#60758c;margin-bottom:6px">Extracted Text (OCR):</div><div class="meta-box">${escapeHtml(meta.extracted_text)}</div>`;
+    } else {
+      html += `<div style="font-size:11px;color:#60758c">No text detected via OCR.</div>`;
+    }
+    if(meta.qr_codes && meta.qr_codes.length){
+      html += `<div style="font-size:11px;color:#60758c;margin-top:12px;margin-bottom:6px">QR Codes Detected:</div>`;
+      meta.qr_codes.forEach(qr=>{
+        html += `<div class="qr-item">📱 ${escapeHtml(qr)}</div>`;
+      });
+    }
+    html += '</div>';
   }
 
-  if(meta.qr_codes && meta.qr_codes.length){
-    html += `<div style="font-size:11px;color:#60758c;margin-top:12px;margin-bottom:6px">QR Codes Detected:</div>`;
-    meta.qr_codes.forEach(qr=>{
-      html += `<div class="qr-item">📱 ${escapeHtml(qr)}</div>`;
-    });
+  // APK metadata
+  if(data.package_name !== undefined && data.permissions_count !== undefined){
+    html += '<div class="meta-section"><div class="heading">APK Metadata</div>';
+    html += `<div class="kv"><span class="kv-label">Package Name</span><span class="kv-value">${escapeHtml(data.package_name || "—")}</span></div>`;
+    html += `<div class="kv"><span class="kv-label">App Name</span><span class="kv-value">${escapeHtml(data.app_name || "—")}</span></div>`;
+    html += `<div class="kv"><span class="kv-label">Total Permissions</span><span class="kv-value">${data.permissions_count}</span></div>`;
+    html += `<div class="kv"><span class="kv-label">Dangerous Permissions</span><span class="kv-value">${(data.dangerous_permissions || []).length}</span></div>`;
+
+    if(data.dangerous_permissions && data.dangerous_permissions.length){
+      html += '<div style="font-size:11px;color:#60758c;margin-top:14px;margin-bottom:6px">Dangerous Permissions Detected:</div>';
+      html += '<div class="perm-list">';
+      data.dangerous_permissions.forEach(p=>{
+        const short = p.replace("android.permission.","");
+        html += `<span class="perm-tag">${escapeHtml(short)}</span>`;
+      });
+      html += '</div>';
+    }
+    html += '</div>';
   }
 
-  html += '</div>';
   container.innerHTML = html;
 }
 
@@ -397,12 +463,13 @@ function getRiskColor(risk){
 
 function formatCategory(c){
   if(!c) return "Unclassified";
-  return String(c).replaceAll("_"," ").replace(/\w/g,x=>x.toUpperCase());
+  return String(c).replaceAll("_"," ").replace(/\b\w/g,x=>x.toUpperCase());
 }
 
 function escapeHtml(v){
   return String(v).replaceAll("&","&amp;").replaceAll("<","&lt;").replaceAll(">","&gt;").replaceAll('"',"&quot;").replaceAll("'","&#039;");
 }
+
 async function loadProviders() {
   try {
     const res = await fetch("/api/providers");
