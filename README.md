@@ -4,12 +4,6 @@
 
 A practical, research-oriented prototype for detecting digital scams, phishing, fraud, impersonation, social engineering, and other digital deception. Designed as a hybrid security system, AI Guardian leverages both deterministic security rules and large language models (LLMs) to provide an explainable threat assessment.
 
-<br>
-
-<div align="center">
-  <img src="./Screenshot.png" alt="AI Guardian Web App Screenshot" width="800"/>
-</div>
-
 ---
 
 <div align="center">
